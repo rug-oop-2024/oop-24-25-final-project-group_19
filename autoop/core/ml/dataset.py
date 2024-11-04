@@ -26,3 +26,4 @@ class Dataset(Artifact):
         bytes = data.to_csv(index=False).encode()
         return super().save(bytes)
     
+    
