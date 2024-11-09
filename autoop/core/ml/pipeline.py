@@ -11,6 +11,9 @@ import numpy as np
 
 
 class Pipeline():
+    """
+    Represents a machine learning pipeline for model training and evaluation.
+    """
     def __init__(self,
                  metrics: List[Metric],
                  dataset: Dataset,
@@ -18,7 +21,8 @@ class Pipeline():
                  input_features: List[Feature],
                  target_feature: Feature,
                  split=0.8,
-                 ):
+                 ) -> None:
+        """Initializes the pipeline."""
         self._dataset = dataset
         self._model = model
         self._input_features = input_features
@@ -38,7 +42,8 @@ class Pipeline():
              "Model type must be regression for continuous target feature"
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Returns a string summary of the pipeline configuration."""
         return f"""
 Pipeline(
     model={self._model.type},
@@ -50,14 +55,13 @@ Pipeline(
 """
 
     @property
-    def model(self):
+    def model(self) -> Model:
+        """Returns the model used in the pipeline."""
         return self._model
 
     @property
     def artifacts(self) -> List[Artifact]:
-        """Used to get the artifacts generated during the pipeline
-        execution to be saved
-        """
+        """Returns a list of artifacts generated when pipeline runs."""
         artifacts = []
         for name, artifact in self._artifacts.items():
             artifact_type = artifact.get("type")
@@ -80,10 +84,12 @@ Pipeline(
             name=f"pipeline_model_{self._model.type}"))
         return artifacts
 
-    def _register_artifact(self, name: str, artifact):
+    def _register_artifact(self, name: str, artifact) -> None:
+        """Registers an artifact to the pipeline."""
         self._artifacts[name] = artifact
 
-    def _preprocess_features(self):
+    def _preprocess_features(self) -> None:
+        """Preprocesses the input and target features."""
         (target_feature_name, target_data, artifact) = \
             preprocess_features([self._target_feature], self._dataset)[0]
         self._register_artifact(target_feature_name, artifact)
@@ -97,8 +103,8 @@ Pipeline(
         self._input_vectors = [data for (feature_name, data, artifact)
                                in input_results]
 
-    def _split_data(self):
-        # Split the data into training and testing sets
+    def _split_data(self) -> None:
+        """Splits data into training and testing sets."""
         split = self._split
         self._train_X = [vector[:int(split * len(vector))] for vector in
                          self._input_vectors]
@@ -110,17 +116,22 @@ Pipeline(
                                                len(self._output_vector)):]
 
     def _compact_vectors(self, vectors: List[np.array]) -> np.array:
+        """Concatenates a list of vectors into a single array."""
         return np.concatenate(vectors, axis=1)
 
-    def _train(self):
+    def _train(self) -> None:
+        """Trains the model using the training data."""
         X = self._compact_vectors(self._train_X)
         Y = self._train_y
         self._model.fit(X, Y)
 
-    def _evaluate(self):
+    def _evaluate(self) -> None:
+        """Evaluates the model on the testing data."""
         X = self._compact_vectors(self._test_X)
         Y = self._test_y
         self._metrics_results = []
+        if len(X) == 0:
+            raise ValueError(self._test_X)
         predictions = self._model.predict(X)
         for metric in self._metrics:
             result = metric.evaluate(predictions, Y)
@@ -128,10 +139,12 @@ Pipeline(
         self._predictions = predictions
 
     def execute(self):
+        """
+        Executes the pipeline: preprocesses, splits, trains, and evaluates.
+        """
         self._preprocess_features()
         self._split_data()
         self._train()
-            
         X = self._compact_vectors(self._train_X)
         Y = self._train_y
         self._metrics_results_train = []
@@ -139,9 +152,7 @@ Pipeline(
         for metric in self._metrics:
             result = metric.evaluate(predictions, Y)
             self._metrics_results_train.append((metric, result))
-            
         self._evaluate()
-
         return {
             "metrics": {
                 "training": self._metrics_results_train,

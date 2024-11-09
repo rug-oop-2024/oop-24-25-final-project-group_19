@@ -1,6 +1,3 @@
-from autoop.core.ml.dataset import Dataset
-
-
 class Feature():
     """
     Represents a feature (column) in a dataset, with its name, type, and values

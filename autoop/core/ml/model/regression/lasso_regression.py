@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.linear_model import Lasso as SklearnLasso
 from autoop.core.ml.model import Model
+from copy import deepcopy
 
 
 class Lasso(Model):
@@ -8,7 +9,9 @@ class Lasso(Model):
     A Lasso regression model that fits observations to ground truth.
     """
     def __init__(self) -> None:
-        self._lasso_model = SklearnLasso()
+        self._model = SklearnLasso()
+        self._type = "regression"
+        super().__init__()
 
     def fit(self, observations: np.ndarray, ground_truth: np.ndarray) -> None:
         """
@@ -19,7 +22,8 @@ class Lasso(Model):
             observations (np.ndarray): An array of training data
             ground_truth (np.ndarray): An array of labels for the training data
         """
-        self._lasso_model.fit(observations, ground_truth)
+        self._model.fit(observations, ground_truth)
+        self._assign_sklearn_parameters(self._model)
 
     def predict(self, observations: np.ndarray) -> np.ndarray:
         """
@@ -32,4 +36,4 @@ class Lasso(Model):
         Returns:
             np.ndarray: An array with the predicted values.
         """
-        return self._lasso_model.predict(observations)
+        return deepcopy(self._model.predict(observations))

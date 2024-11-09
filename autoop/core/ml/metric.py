@@ -2,13 +2,16 @@ from abc import ABC, abstractmethod
 from typing import TypeVar
 import numpy as np
 
-METRICS = [
-    "mean_squared_error",
+METRICS_CLASSIFICATION = [
     "accuracy",
     "error_rate",
-    "mean_absolute_error",
-    "root_mean_squared_error",
     "jaccard_index"
+]
+
+METRICS_REGRESSION = [
+    "mean_squared_error",
+    "mean_absolute_error",
+    "root_mean_squared_error"
 ]
 Metric = TypeVar('Metric')
 
@@ -22,7 +25,7 @@ def get_metric(name: str) -> Metric:
         name (str): The name of the metric to retrieve.
 
     Returns:
-        Metric: An instance of the requested metric class.
+        Metric: The requested metric class.
     """
     metric_classes = {
         "mean_squared_error": MeanSquaredError,
@@ -40,9 +43,13 @@ def get_metric(name: str) -> Metric:
 class Metric(ABC):
     """Base class for all metrics."""
     @abstractmethod
-    def __call__(self, ground_truth: np.ndarray, predictions: np.ndarray) -> float:
+    def __call__(
+        self,
+        ground_truth: np.ndarray,
+        predictions: np.ndarray
+    ) -> float:
         """
-        Calculate the metric based on the provided ground truth and predictions.
+        Calculate the metric based on provided ground truth and predictions.
 
         Args:
             ground_truth (np.ndarray): Array of true labels.
@@ -52,7 +59,11 @@ class Metric(ABC):
         """
         pass
     
-    def evaluate(self, predictions: np.ndarray, ground_truth: np.ndarray) -> float:
+    def evaluate(
+        self,
+        predictions: np.ndarray,
+        ground_truth: np.ndarray
+    ) -> float:
         """
         Wrapper for __call__, allows the use of evaluate() in the Pipeline.
         """
@@ -62,7 +73,11 @@ class Metric(ABC):
 class Accuracy(Metric):
     """Calculates accuracy for classification tasks."""
 
-    def __call__(self, ground_truth: np.ndarray, predictions: np.ndarray) -> float:
+    def __call__(
+        self,
+        ground_truth: np.ndarray,
+        predictions: np.ndarray
+    ) -> float:
         """
         Calculate the accuracy of predictions compared to ground truth.
 
@@ -78,7 +93,11 @@ class Accuracy(Metric):
 
 class ErrorRate(Metric):
     """Calculates error rate for classification tasks."""
-    def __call__(self, ground_truth: np.ndarray, predictions: np.ndarray) -> float:
+    def __call__(
+        self,
+        ground_truth: np.ndarray,
+        predictions: np.ndarray
+    ) -> float:
         """
         Calculate the error rate of predictions compared to ground truth.
 
@@ -93,9 +112,13 @@ class ErrorRate(Metric):
 
 
 class JaccardIndex(Metric):
-    """Calculates the Jaccard Index (Intersection over Union) for classification tasks."""
+    """Calculates the Jaccard Index for classification tasks."""
 
-    def __call__(self, ground_truth: np.ndarray, predictions: np.ndarray) -> float:
+    def __call__(
+        self,
+        ground_truth: np.ndarray,
+        predictions: np.ndarray
+    ) -> float:
         """
         Calculate the Jaccard Index between ground truth and predictions.
 
@@ -114,7 +137,11 @@ class JaccardIndex(Metric):
 class MeanSquaredError(Metric):
     """Calculates Mean Squared Error for regression tasks."""
 
-    def __call__(self, ground_truth: np.ndarray, predictions: np.ndarray) -> float:
+    def __call__(
+        self,
+        ground_truth: np.ndarray,
+        predictions: np.ndarray
+    ) -> float:
         """
         Calculate the Mean Squared Error between predictions and ground truth.
 
@@ -128,13 +155,17 @@ class MeanSquaredError(Metric):
         return np.mean((ground_truth - predictions) ** 2)
 
 
-
 class RootMeanSquaredError(Metric):
     """Calculates Root Mean Squared Error for regression tasks."""
 
-    def __call__(self, ground_truth: np.ndarray, predictions: np.ndarray) -> float:
+    def __call__(
+        self,
+        ground_truth: np.ndarray,
+        predictions: np.ndarray
+    ) -> float:
         """
-        Calculate the Root Mean Squared Error between predictions and ground truth.
+        Calculate the Root Mean Squared Error between predictions
+        and ground truth.
 
         Args:
             ground_truth (np.ndarray): Array of true values.
@@ -149,7 +180,11 @@ class RootMeanSquaredError(Metric):
 class MeanAbsoluteError(Metric):
     """Calculates Mean Absolute Error for regression tasks. """
 
-    def __call__(self, ground_truth: np.ndarray, predictions: np.ndarray) -> float:
+    def __call__(
+        self,
+        ground_truth: np.ndarray,
+        predictions: np.ndarray
+    ) -> float:
         """
         Calculate the Mean Absolute Error between predictions and ground truth.
 

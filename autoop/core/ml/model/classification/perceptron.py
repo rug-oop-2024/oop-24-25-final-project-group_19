@@ -1,23 +1,24 @@
 import numpy as np
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Perceptron
 from autoop.core.ml.model import Model
 from copy import deepcopy
 
 
-class RidgeRegressionModel(Model):
-    """A Ridge regression model that fits observations to ground truth."""
+class PerceptronModel(Model):
+    """
+    Perceptron classifier model for binary classification.
+    """
     def __init__(self) -> None:
         """
-        Initializes a Ridge regression model.
+        Initializes the Perceptron model.
         """
-        self._model = Ridge()
-        self._type = "regression"
+        self._model = Perceptron()
+        self._type = "classification"
         super().__init__()
 
     def fit(self, observations: np.ndarray, ground_truth: np.ndarray) -> None:
         """
-        Fit the model to the provided observations and ground truth using
-        the Ridge regression model.
+        Fit the model to the provided observations and ground truth.
 
         Args:
             observations (np.ndarray): An array of training data
@@ -28,13 +29,12 @@ class RidgeRegressionModel(Model):
 
     def predict(self, observations: np.ndarray) -> np.ndarray:
         """
-        Predict the output based on the input observations using the Ridge
-        regression model.
+        Predicts the output based on the input training data.
 
         Args:
             observations (np.ndarray): An array of data for prediction.
 
         Returns:
-            np.ndarray: An array of predicted values.
+            np.ndarray: an array with the predicted values.
         """
         return deepcopy(self._model.predict(observations))

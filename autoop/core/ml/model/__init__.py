@@ -1,9 +1,9 @@
 
 from autoop.core.ml.model.model import Model
 from autoop.core.ml.model.classification import (
-    DecisionTreeModel,
+    RidgeClassificationModel,
     LogisticRegressionWrapper,
-    KNearestNeighbors
+    PerceptronModel
 )
 from autoop.core.ml.model.regression import (
     Lasso,
@@ -20,8 +20,8 @@ REGRESSION_MODELS = [
 ]
 
 CLASSIFICATION_MODELS = [
-    "decision_tree",
-    "k_nearest_neighbors",
+    "ridge_classifier",
+    "perceptron_model",
     "logistic_regression"
 ]
 
@@ -32,8 +32,8 @@ def get_model(model_name: str) -> Model:
         "ridge_regression": RidgeRegressionModel,
         "lasso": Lasso,
         "elastic_net": ElasticNetWrapper,
-        "decision_tree": DecisionTreeModel,
-        "k_nearest_neighbors": KNearestNeighbors,
+        "ridge_classifier": RidgeClassificationModel,
+        "perceptron_model": PerceptronModel,
         "logistic_regression": LogisticRegressionWrapper,
         "multiple_linear_regression": MultipleLinearRegression
     }

@@ -1,13 +1,17 @@
 import numpy as np
+from sklearn.linear_model import LinearRegression
 from autoop.core.ml.model import Model
+from copy import deepcopy
 
 
 class MultipleLinearRegression(Model):
     """
-    MultipleLinearRegression uses the formula w = (X.T * X)^-1 * X.T * y.
-    This formula is used to fit the model and find the the prediction,
-    intercept, and coefficients.
+    MultipleLinearRegression is a wrapper of sklearn's Linear Regression.
     """
+    def __init__(self) -> None:
+        self._model = LinearRegression()
+        self._type = "regression"
+        super().__init__()
 
     def fit(self, observations: np.ndarray, ground_truth: np.ndarray) -> None:
         """
@@ -17,21 +21,8 @@ class MultipleLinearRegression(Model):
             observations: An array of training data.
             ground_truth : An array of labels for the training data.
         """
-        if observations.ndim == 1:
-            observations = observations.reshape(-1, 1)
-        elif observations.shape[0] < observations.shape[1]:
-            observations = observations.T
-
-        vertex_of_ones = np.ones((observations.shape[0], 1))
-        homogeneous_matrix = np.hstack([observations, vertex_of_ones])
-        
-        transposed_matrix = homogeneous_matrix.T
-        covariance_matrix = np.dot(transposed_matrix, homogeneous_matrix)
-        inversed_covariance = np.linalg.pinv(covariance_matrix)
-        observations_ground_truth = np.dot(transposed_matrix, ground_truth)
-        weight = np.dot(inversed_covariance, observations_ground_truth)
-
-        self.parameters = {"weight": weight}
+        self._model.fit(observations, ground_truth)
+        self._assign_sklearn_parameters(self._model)
 
     def predict(self, observations: np.ndarray) -> np.ndarray:
         """
@@ -43,16 +34,4 @@ class MultipleLinearRegression(Model):
         Returns:
             np.ndarray: an array with the predicted values
         """
-        if observations.ndim == 1:
-            return observations.reshape(-1, 1)
-
-        if observations.shape[0] < observations.shape[1]:
-            observations = observations.T
-
-        if observations.shape[1] != self.parameters["weight"].shape[0] - 1:
-            raise ValueError("Mismatch in number of features.")
-
-        vertex_of_ones = np.ones((observations.shape[0], 1))
-        homogeneous_matrix = np.hstack([observations, vertex_of_ones])
-
-        return np.dot(homogeneous_matrix, self.parameters["weight"])
+        return deepcopy(self._model.predict(observations))

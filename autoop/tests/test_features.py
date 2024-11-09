@@ -1,18 +1,19 @@
 import unittest
 from sklearn.datasets import load_iris, fetch_openml
 import pandas as pd
-
 from autoop.core.ml.dataset import Dataset
 from autoop.core.ml.feature import Feature
 from autoop.functional.feature import detect_feature_types
 
 
 class TestFeatures(unittest.TestCase):
-
+    """Unit tests for detecting feature types in datasets."""
     def setUp(self) -> None:
+        """Set up the initial state for the tests."""
         pass
 
-    def test_detect_features_continuous(self):
+    def test_detect_features_continuous(self) -> None:
+        """Test feature detection for dataset with only continuous features."""
         iris = load_iris()
         df = pd.DataFrame(
             iris.data,
@@ -33,7 +34,11 @@ class TestFeatures(unittest.TestCase):
             self.assertEqual(feature.name in iris.feature_names, True)
             self.assertEqual(feature.type, "numerical")
 
-    def test_detect_features_with_categories(self):
+    def test_detect_features_with_categories(self) -> None:
+        """
+        Test feature detection for a dataset with both numerical
+        and categorical features.
+        """
         data = fetch_openml(name="adult", version=1, parser="auto")
         df = pd.DataFrame(
             data.data,

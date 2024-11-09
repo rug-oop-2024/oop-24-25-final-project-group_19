@@ -1,29 +1,20 @@
 from sklearn.linear_model import ElasticNet
 import numpy as np
 from autoop.core.ml.model import Model
+from copy import deepcopy
 
 
 class ElasticNetWrapper(Model):
     """
-    A wrapper for scikit-learn's ElasticNet regression model with
-    input validation.
+    ElasticNet regression model.
     """
-    def __init__(self, alpha: float = 1.0, l1_ratio: float = 0.5) -> None:
+    def __init__(self) -> None:
         """
-        Initializes the ElasticNetWrapper with specified parameters.
-
-        Args:
-            alpha (float): Regularization strength
-            l1_ratio (float): Mixing parameter for ElasticNet
-
+        Initializes the ElasticNetWrapper.
         """
-        if not isinstance(alpha, float) or not isinstance(l1_ratio, float):
-            raise TypeError("alpha and l1_ratio must be a float")
-        if alpha <= 0:
-            raise ValueError("alpha must be positive.")
-        if not (0 <= l1_ratio <= 1):
-            raise ValueError("l1_ratio must be between 0 and 1.")
-        self._model = ElasticNet(alpha=alpha, l1_ratio=l1_ratio)
+        self._model = ElasticNet()
+        self._type = "regression"
+        super().__init__()
 
     def fit(self, observations: np.ndarray, ground_truth: np.ndarray) -> None:
         """
@@ -34,6 +25,7 @@ class ElasticNetWrapper(Model):
             ground_truth (np.ndarray): An array of labels for the training data
         """
         self._model.fit(observations, ground_truth)
+        self._assign_sklearn_parameters(self._model)
 
     def predict(self, observations: np.ndarray) -> np.ndarray:
         """
@@ -45,4 +37,4 @@ class ElasticNetWrapper(Model):
         Returns:
             np.ndarray: An array of predicted values.
         """
-        return self._model.predict(observations)
+        return deepcopy(self._model.predict(observations))

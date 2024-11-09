@@ -1,26 +1,20 @@
 from sklearn.linear_model import LogisticRegression
 from autoop.core.ml.model import Model
 import numpy as np
+from copy import deepcopy
 
 
 class LogisticRegressionWrapper(Model):
     """
     A simplified wrapper for scikit-learn's LogisticRegression model.
     """
-    def __init__(self, max_iter: int = 100):
+    def __init__(self):
         """
-        Initializes the LogisticRegressionWrapper with
-        specified maximum iterations.
-
-        Args:
-            max_iter (int): Maximum number of iterations for convergence.
-
+        Initializes the LogisticRegressionWrapper.
         """
-        if not isinstance(max_iter, int):
-            raise TypeError("max_iter must be an integer.")
-        if max_iter <= 0:
-            raise ValueError("max_iter must be a positive integer.")
-        self.model = LogisticRegression(max_iter=max_iter)
+        self._model = LogisticRegression()
+        self._type = "classification"
+        super().__init__()
 
     def fit(self, observations: np.ndarray, ground_truth: np.ndarray) -> None:
         """
@@ -30,7 +24,8 @@ class LogisticRegressionWrapper(Model):
             observations (np.ndarray): An array of training data
             ground_truth (np.ndarray): An array of labels for the training data
         """
-        self.model.fit(observations, ground_truth)
+        self._model.fit(observations, ground_truth)
+        self._assign_sklearn_parameters(self._model)
 
     def predict(self, observations: np.ndarray) -> np.ndarray:
         """
@@ -42,4 +37,4 @@ class LogisticRegressionWrapper(Model):
         Returns:
             np.ndarray: an array with the predicted values
         """
-        return self.model.predict(observations)
+        return deepcopy(self._model.predict(observations))

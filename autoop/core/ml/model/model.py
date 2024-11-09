@@ -21,8 +21,6 @@ class Model(ABC):
         Parameters:
             observations: An array of training data.
             ground_truth : An array of labels for the training data.
-
-        Returns: None
         """
         pass
 
@@ -62,3 +60,14 @@ class Model(ABC):
         if not isinstance(value, dict):
             raise ValueError("Parameters must be a dictionary.")
         self._parameters = value
+
+    @property
+    def type(self):
+        """Returns the type of the model."""
+        return self._type
+
+    def _assign_sklearn_parameters(self, model):
+        self.parameters = {
+            'intercept': model.intercept_,
+            'coefficients': model.coef_
+        }
