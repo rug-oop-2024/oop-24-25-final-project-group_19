@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app.pages.2_Modelling &mdash; AutoML Library  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            AutoML Library
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoop.html">autoop package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../app.html">app package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">oop-24-25-final-project-group_19</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">AutoML Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">app.pages.2_Modelling</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for app.pages.2_Modelling</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">app.core.system</span> <span class="kn">import</span> <span class="n">AutoMLSystem</span>
+<span class="kn">from</span> <span class="nn">autoop.core.ml.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">autoop.functional.feature</span> <span class="kn">import</span> <span class="n">detect_feature_types</span>
+<span class="kn">from</span> <span class="nn">autoop.core.ml.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">REGRESSION_MODELS</span><span class="p">,</span> <span class="n">CLASSIFICATION_MODELS</span><span class="p">,</span> <span class="n">get_model</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">autoop.core.ml.metric</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">METRICS_CLASSIFICATION</span><span class="p">,</span> <span class="n">METRICS_REGRESSION</span><span class="p">,</span> <span class="n">get_metric</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">autoop.core.ml.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">autoop.core.ml.feature</span> <span class="kn">import</span> <span class="n">Feature</span>
+<span class="kn">from</span> <span class="nn">autoop.core.ml.artifact</span> <span class="kn">import</span> <span class="n">Artifact</span>
+<span class="kn">from</span> <span class="nn">autoop.core.ml.model</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">autoop.core.ml.metric</span> <span class="kn">import</span> <span class="n">Metric</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span><span class="n">page_title</span><span class="o">=</span><span class="s2">&quot;Modelling&quot;</span><span class="p">,</span> <span class="n">page_icon</span><span class="o">=</span><span class="s2">&quot;📈&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Modelling">
+<a class="viewcode-back" href="../../../app.pages.html#app.pages.2_Modelling.Modelling">[docs]</a>
+<span class="k">class</span> <span class="nc">Modelling</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to manage the creation, execution, and saving of</span>
+<span class="sd">    pipelines in a Streamlit app.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize Modelling instance with default pipeline and summary</span>
+<span class="sd">        storage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_write_helper_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write helper text in a styled format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to display.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;p style=</span><span class="se">\&quot;</span><span class="s2">color: #888;</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&lt;/p&gt;&quot;</span><span class="p">,</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_choose_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Dataset</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display a dropdown to select a dataset from the registry</span>
+<span class="sd">        and return the selected dataset.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dataset: The selected dataset as a Dataset object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">automl</span> <span class="o">=</span> <span class="n">AutoMLSystem</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="n">automl</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;dataset&quot;</span><span class="p">)</span>
+        <span class="n">datasets_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">]</span>
+        <span class="n">dataset_dropdown</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span><span class="s2">&quot;Select a Dataset&quot;</span><span class="p">,</span> <span class="n">datasets_names</span><span class="p">)</span>
+        <span class="n">selected_dataset_object</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">dataset</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">datasets</span>
+                <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">_name</span> <span class="o">==</span> <span class="n">dataset_dropdown</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">selected_dataset_object</span><span class="p">:</span>
+            <span class="n">selected_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">initialize_from_line</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">selected_dataset_object</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">selected_dataset_object</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">asset_path</span><span class="o">=</span><span class="n">selected_dataset_object</span><span class="o">.</span><span class="n">asset_path</span><span class="p">,</span>
+                <span class="n">version</span><span class="o">=</span><span class="n">selected_dataset_object</span><span class="o">.</span><span class="n">version</span>
+            <span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected Dataset: </span><span class="si">{</span><span class="n">selected_dataset</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">selected_dataset</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_choose_features</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="kc">None</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="n">Feature</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allow the user to select input and target features from the dataset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataset (Dataset): The dataset to select features from.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: (input_features, target_feature) as lists or None</span>
+<span class="sd">            if not selected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;View the data&quot;</span><span class="p">):</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">all_feature_names</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">input_feature_dropdown</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">multiselect</span><span class="p">(</span>
+            <span class="s2">&quot;Select the input features&quot;</span><span class="p">,</span> <span class="n">all_feature_names</span><span class="p">)</span>
+        <span class="n">selected_input_feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_feature</span><span class="p">(</span>
+            <span class="n">input_feature_dropdown</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">selected_input_feature</span><span class="p">:</span>
+            <span class="n">features_not_in_input</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">feature</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">all_feature_names</span>
+                <span class="k">if</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_feature_dropdown</span><span class="p">]</span>
+            <span class="n">target_feature_dropdown</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+                <span class="s2">&quot;Select the target feature&quot;</span><span class="p">,</span> <span class="n">features_not_in_input</span><span class="p">)</span>
+            <span class="n">selected_target_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_feature</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">target_feature_dropdown</span><span class="p">],</span> <span class="n">dataset</span><span class="p">)</span>
+            <span class="n">selected_target_feature</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">selected_target_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">selected_target_features</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">selected_input_feature</span><span class="p">,</span> <span class="n">selected_target_feature</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_find_feature</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Feature</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find specific features in the dataset based on feature names.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feature_names (list): List of feature names to find.</span>
+<span class="sd">            dataset (Dataset): The dataset to find features in.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of matched Feature objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">detect_feature_types</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">feature</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features</span> <span class="k">if</span> <span class="n">feature</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_choose_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected_target_feature</span><span class="p">:</span> <span class="n">Feature</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allow user to select a model based on the type of target feature.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            selected_target_feature (Feature): The selected target feature</span>
+<span class="sd">            to determine model type.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Model: The selected model object or None if no model selected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_target_feature</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">selected_target_feature</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;categorical&quot;</span><span class="p">:</span>
+            <span class="n">model_dropdown</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+                <span class="s2">&quot;What classification model do you want to use?&quot;</span><span class="p">,</span>
+                <span class="n">CLASSIFICATION_MODELS</span><span class="p">)</span>
+            <span class="n">selected_model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_dropdown</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compatible_metrics</span> <span class="o">=</span> <span class="n">METRICS_CLASSIFICATION</span>
+        <span class="k">elif</span> <span class="n">selected_target_feature</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;numerical&quot;</span><span class="p">:</span>
+            <span class="n">model_dropdown</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">selectbox</span><span class="p">(</span>
+                <span class="s2">&quot;What regression model do you want to use?&quot;</span><span class="p">,</span> <span class="n">REGRESSION_MODELS</span><span class="p">)</span>
+            <span class="n">selected_model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_dropdown</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compatible_metrics</span> <span class="o">=</span> <span class="n">METRICS_REGRESSION</span>
+        <span class="k">return</span> <span class="n">selected_model</span>
+
+    <span class="k">def</span> <span class="nf">_choose_split_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prompt the user to select a split value for training and testing data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The selected split ratio as a decimal value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">split_value</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span>
+            <span class="s2">&quot;How would you like to split the dataset?&quot;</span><span class="p">,</span>
+            <span class="n">min_value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">max_value</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The dataset will be split so that </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">split_value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">% of&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; the dataset will be used for training, and &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">((</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">split_value</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">% of the data will be &quot;</span>
+            <span class="s2">&quot;used for testing.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">split_value</span>
+
+    <span class="k">def</span> <span class="nf">_choose_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Metric</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allow user to select evaluation metrics for the model.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of selected metric objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metric_dropdown</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">multiselect</span><span class="p">(</span>
+            <span class="s2">&quot;What metric would you like to use?&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compatible_metrics</span><span class="p">)</span>
+        <span class="n">selected_metric</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_metric</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metric_dropdown</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">selected_metric</span>
+
+    <span class="k">def</span> <span class="nf">_run_pipeline</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">selected_model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span>
+            <span class="n">selected_metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Metric</span><span class="p">],</span>
+            <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
+            <span class="n">input_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Feature</span><span class="p">],</span>
+            <span class="n">target_feature</span><span class="p">:</span> <span class="n">Feature</span><span class="p">,</span>
+            <span class="n">split_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the pipeline with selected configurations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            selected_model (Model): The chosen model.</span>
+<span class="sd">            selected_metrics (list): List of selected metrics.</span>
+<span class="sd">            dataset (Dataset): The dataset to use in the pipeline.</span>
+<span class="sd">            input_features (list): List of input features.</span>
+<span class="sd">            target_feature (Feature): The target feature for prediction.</span>
+<span class="sd">            split_value (float): The train-test split ratio.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Run model&quot;</span><span class="p">):</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_run_model</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+                <span class="n">metrics</span><span class="o">=</span><span class="n">selected_metrics</span><span class="p">,</span>
+                <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">selected_model</span><span class="p">,</span>
+                <span class="n">input_features</span><span class="o">=</span><span class="n">input_features</span><span class="p">,</span>
+                <span class="n">target_feature</span><span class="o">=</span><span class="n">target_feature</span><span class="p">,</span>
+                <span class="n">split</span><span class="o">=</span><span class="n">split_value</span>
+            <span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Pipeline Summary&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_print_nicely</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_pipeline</span><span class="p">))</span>
+
+            <span class="n">results</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_pipeline</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;metrics&quot;</span><span class="p">:</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Metrics&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">subset</span><span class="p">,</span> <span class="n">metrics</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+                            <span class="n">metric_name</span><span class="p">,</span> <span class="n">metric_value</span> <span class="o">=</span> <span class="n">metric</span>
+                            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;**</span><span class="si">{</span><span class="n">metric_name</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;for </span><span class="si">{</span><span class="n">subset</span><span class="si">}</span><span class="s2">:** </span><span class="si">{</span><span class="n">metric_value</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;predictions&quot;</span><span class="p">:</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;### Predictions&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">subset</span><span class="p">,</span> <span class="n">predictions</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;**</span><span class="si">{</span><span class="n">subset</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">:**&quot;</span><span class="p">)</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_print_nicely</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format the summary of the pipeline.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pipeline_str (str): The string representation of the pipeline.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_type</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;model=(\w+)&quot;</span><span class="p">,</span> <span class="n">pipeline_str</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+
+        <span class="n">input_features_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;input_features=\[(.*?)\]&quot;</span><span class="p">,</span> <span class="n">pipeline_str</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">input_features</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;Feature\(name = ([\w\s/]+), data_type = (\w+)\)&quot;</span><span class="p">,</span>
+            <span class="n">input_features_match</span><span class="p">)</span>
+        <span class="n">input_features_formatted</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span>
+             <span class="n">data_type</span> <span class="ow">in</span> <span class="n">input_features</span><span class="p">])</span>
+
+        <span class="n">target_feature_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;target_feature=Feature\(name = ([\w\s/]+), data_type = (\w+)\)&quot;</span><span class="p">,</span>
+            <span class="n">pipeline_str</span><span class="p">)</span>
+        <span class="n">target_feature</span> <span class="o">=</span> <span class="n">target_feature_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="n">target_feature_type</span> <span class="o">=</span> <span class="n">target_feature_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+
+        <span class="n">split_value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;split=([\d\.]+)&quot;</span><span class="p">,</span> <span class="n">pipeline_str</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">metrics_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;metrics=\[(.*?)\]&quot;</span><span class="p">,</span> <span class="n">pipeline_str</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;&lt;autoop\.core\.ml\.metric\.(\w+) object&quot;</span><span class="p">,</span> <span class="n">metrics_match</span><span class="p">)</span>
+        <span class="n">metrics_formatted</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_summary</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;**Type of model:** </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;**Input features:** </span><span class="si">{</span><span class="n">input_features_formatted</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;**Target feature:** </span><span class="si">{</span><span class="n">target_feature</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">target_feature_type</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;**Split ratio:** </span><span class="si">{</span><span class="n">split_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;**Metrics:** </span><span class="si">{</span><span class="n">metrics_formatted</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_summary</span><span class="p">:</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the current pipeline model as an artifact.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_run_model&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;_save&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">[</span><span class="s2">&quot;_save&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_save</span> <span class="ow">or</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;SAVE&quot;</span><span class="p">):</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_save</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Name&quot;</span><span class="p">)</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">text_input</span><span class="p">(</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Name must be a string&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">version</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\d+\.\d+\.\d+$&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Version should be in format x.y.z&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s2">&quot;Confirm Save&quot;</span><span class="p">):</span>
+
+                    <span class="n">artifact</span> <span class="o">=</span> <span class="n">Artifact</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                        <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_pipeline</span><span class="o">.</span><span class="n">model</span><span class="p">),</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span>
+                        <span class="n">asset_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;pipeline/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">metadata</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">_summary</span>
+                    <span class="p">)</span>
+                    <span class="n">automl</span> <span class="o">=</span> <span class="n">AutoMLSystem</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+                    <span class="n">automl</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">artifact</span><span class="p">)</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The pipeline &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> has been saved.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Modelling.run">
+<a class="viewcode-back" href="../../../app.pages.html#app.pages.2_Modelling.Modelling.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main method to execute all modelling steps in the correct order.&quot;&quot;&quot;</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# ⚙ Modelling&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_helper_text</span><span class="p">(</span>
+            <span class="s2">&quot;In this section, you can design a machine learning&quot;</span>
+            <span class="s2">&quot;pipeline to train a model on a dataset.&quot;</span><span class="p">)</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_dataset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">input_features</span><span class="p">,</span> <span class="n">target_feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_features</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">input_features</span> <span class="ow">and</span> <span class="n">target_feature</span><span class="p">:</span>
+                <span class="n">selected_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_model</span><span class="p">(</span><span class="n">target_feature</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">selected_model</span><span class="p">:</span>
+                    <span class="n">split_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_split_value</span><span class="p">()</span>
+                    <span class="n">selected_metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_metric</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">selected_metrics</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_run_pipeline</span><span class="p">(</span>
+                            <span class="n">selected_model</span><span class="p">,</span>
+                            <span class="n">selected_metrics</span><span class="p">,</span>
+                            <span class="n">dataset</span><span class="p">,</span>
+                            <span class="n">input_features</span><span class="p">,</span>
+                            <span class="n">target_feature</span><span class="p">,</span>
+                            <span class="n">split_value</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">modelling_page</span> <span class="o">=</span> <span class="n">Modelling</span><span class="p">()</span>
+    <span class="n">modelling_page</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Sohret Oznacar and Mateusz Wasko.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

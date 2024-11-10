@@ -1,0 +1,814 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSC-0001: Addition of _assign_sklearn_parameters function &mdash; AutoML Library  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AutoML Library
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../autoop.html">autoop package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../app.html">app package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">autoop</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AutoML Library</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DSC-0001: Addition of _assign_sklearn_parameters function</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/decisions/DSC-0001.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dsc-0001-addition-of-assign-sklearn-parameters-function">
+<h1>DSC-0001: Addition of _assign_sklearn_parameters function<a class="headerlink" href="#dsc-0001-addition-of-assign-sklearn-parameters-function" title="Link to this heading"></a></h1>
+</section>
+<section id="date-2024-10-27">
+<h1>Date: 2024-10-27<a class="headerlink" href="#date-2024-10-27" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-use-assign-sklearn-parameters-self-model-for-models">
+<h1>Decision: Use _assign_sklearn_parameters(self, model) for models<a class="headerlink" href="#decision-use-assign-sklearn-parameters-self-model-for-models" title="Link to this heading"></a></h1>
+</section>
+<section id="status-accepted">
+<h1>Status: Accepted<a class="headerlink" href="#status-accepted" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-lack-of-getting-and-storing-parameters-from-the-wrappers">
+<h1>Motivation: Lack of getting and storing parameters from the wrappers<a class="headerlink" href="#motivation-lack-of-getting-and-storing-parameters-from-the-wrappers" title="Link to this heading"></a></h1>
+</section>
+<section id="of-classification-and-regression-models">
+<h1>of classification and regression models<a class="headerlink" href="#of-classification-and-regression-models" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-this-function-gets-the-parameters-of-the-wrapper-models-and">
+<h1>Reason: This function gets the parameters of the wrapper models and<a class="headerlink" href="#reason-this-function-gets-the-parameters-of-the-wrapper-models-and" title="Link to this heading"></a></h1>
+</section>
+<section id="stores-them-in-a-dictionary-so-that-they-can-be-reached">
+<h1>stores them in a dictionary so that they can be reached<a class="headerlink" href="#stores-them-in-a-dictionary-so-that-they-can-be-reached" title="Link to this heading"></a></h1>
+</section>
+<section id="later-when-the-information-is-needed">
+<h1>later when the information is needed.<a class="headerlink" href="#later-when-the-information-is-needed" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-this-function-will-only-work-with-models">
+<h1>Limitations: This function will only work with models<a class="headerlink" href="#limitations-this-function-will-only-work-with-models" title="Link to this heading"></a></h1>
+</section>
+<section id="which-have-intercept-and-coefficients-it-will-cause-an-error">
+<h1>which have intercept and coefficients; it will cause an error<a class="headerlink" href="#which-have-intercept-and-coefficients-it-will-cause-an-error" title="Link to this heading"></a></h1>
+</section>
+<section id="if-the-function-is-called-on-a-model-without-these-properties">
+<h1>if the function is called on a model without these properties.<a class="headerlink" href="#if-the-function-is-called-on-a-model-without-these-properties" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-instead-of-creating-a-function-for-this-get-intercept-and">
+<h1>Alternatives: Instead of creating a function for this, get intercept and<a class="headerlink" href="#alternatives-instead-of-creating-a-function-for-this-get-intercept-and" title="Link to this heading"></a></h1>
+</section>
+<section id="coefficients-from-each-model-by-multiple-functions-since-a-function-is">
+<h1>coefficients from each model by multiple functions (since a function is<a class="headerlink" href="#coefficients-from-each-model-by-multiple-functions-since-a-function-is" title="Link to this heading"></a></h1>
+</section>
+<section id="needed-for-each-model">
+<h1>needed for each model).<a class="headerlink" href="#needed-for-each-model" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0002-addition-of-def-id-self">
+<h1>DSC-0002: Addition of def id(self)<a class="headerlink" href="#dsc-0002-addition-of-def-id-self" title="Link to this heading"></a></h1>
+</section>
+<section id="id1">
+<h1>Date: 2024-10-27<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-usage-of-def-id-self-getter-function-which-is-used">
+<h1>Decision: Usage of def id(self) getter function which is used<a class="headerlink" href="#decision-usage-of-def-id-self-getter-function-which-is-used" title="Link to this heading"></a></h1>
+</section>
+<section id="to-generate-a-unique-id-for-the-object-on-which-this-function-is-called">
+<h1>to generate a unique id for the object on which this function is called.<a class="headerlink" href="#to-generate-a-unique-id-for-the-object-on-which-this-function-is-called" title="Link to this heading"></a></h1>
+</section>
+<section id="id2">
+<h1>Status: Accepted<a class="headerlink" href="#id2" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-lack-of-function-to-generate-a-unique-id-for-the-objects">
+<h1>Motivation: Lack of function to generate a unique id for the objects.<a class="headerlink" href="#motivation-lack-of-function-to-generate-a-unique-id-for-the-objects" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-this-function-creates-a-unique-id-and-can-be-used-in-classes-that">
+<h1>Reason: This function creates a unique id and can be used in classes that<a class="headerlink" href="#reason-this-function-creates-a-unique-id-and-can-be-used-in-classes-that" title="Link to this heading"></a></h1>
+</section>
+<section id="inherit-from-the-artifact-class-so-we-can-reach-objects-with-their">
+<h1>inherit from the Artifact class, so we can reach objects with their<a class="headerlink" href="#inherit-from-the-artifact-class-so-we-can-reach-objects-with-their" title="Link to this heading"></a></h1>
+</section>
+<section id="unique-ids">
+<h1>unique ids.<a class="headerlink" href="#unique-ids" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-the-id-might-not-guarantee-uniqueness-if-the-version">
+<h1>Limitations: The id might not guarantee uniqueness if the version<a class="headerlink" href="#limitations-the-id-might-not-guarantee-uniqueness-if-the-version" title="Link to this heading"></a></h1>
+</section>
+<section id="and-asset-paths-are-not-unique">
+<h1>and asset paths are not unique.<a class="headerlink" href="#and-asset-paths-are-not-unique" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-python-s-built-in-uuid-module">
+<h1>Alternatives: Python’s built-in uuid module.<a class="headerlink" href="#alternatives-python-s-built-in-uuid-module" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0003-getter-functions-in-artifact-class">
+<h1>DSC-0003: Getter functions in Artifact class<a class="headerlink" href="#dsc-0003-getter-functions-in-artifact-class" title="Link to this heading"></a></h1>
+</section>
+<section id="id3">
+<h1>Date: 2024-10-27<a class="headerlink" href="#id3" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-creating-getters-for-all-the-object-attributes-in-the-artifact">
+<h1>Decision: Creating getters for all the object attributes in the Artifact<a class="headerlink" href="#decision-creating-getters-for-all-the-object-attributes-in-the-artifact" title="Link to this heading"></a></h1>
+</section>
+<section id="class">
+<h1>Class<a class="headerlink" href="#class" title="Link to this heading"></a></h1>
+</section>
+<section id="id4">
+<h1>Status: Accepted<a class="headerlink" href="#id4" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-lack-of-safely-reaching-the-artifact-arguments-such-as-name">
+<h1>Motivation: Lack of safely reaching the artifact arguments such as name<a class="headerlink" href="#motivation-lack-of-safely-reaching-the-artifact-arguments-such-as-name" title="Link to this heading"></a></h1>
+</section>
+<section id="for-encapsulation">
+<h1>for encapsulation.<a class="headerlink" href="#for-encapsulation" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-the-getter-functions-allow-the-user-to-view-information-in-a-safe">
+<h1>Reason: The getter functions allow the user to view information in a safe<a class="headerlink" href="#reason-the-getter-functions-allow-the-user-to-view-information-in-a-safe" title="Link to this heading"></a></h1>
+</section>
+<section id="environment-to-prevent-leakage-and-maintain-the-private-nature-of">
+<h1>environment to prevent leakage and maintain the private nature of<a class="headerlink" href="#environment-to-prevent-leakage-and-maintain-the-private-nature-of" title="Link to this heading"></a></h1>
+</section>
+<section id="attributes">
+<h1>attributes.<a class="headerlink" href="#attributes" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-none">
+<h1>Limitations: None<a class="headerlink" href="#limitations-none" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-none">
+<h1>Alternatives: None<a class="headerlink" href="#alternatives-none" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0004-usage-of-typevar">
+<h1>DSC-0004: Usage of TypeVar<a class="headerlink" href="#dsc-0004-usage-of-typevar" title="Link to this heading"></a></h1>
+</section>
+<section id="id5">
+<h1>Date: 2024-10-27<a class="headerlink" href="#id5" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-adding-typevar-in-the-dataset-class">
+<h1>Decision: Adding TypeVar in the dataset class<a class="headerlink" href="#decision-adding-typevar-in-the-dataset-class" title="Link to this heading"></a></h1>
+</section>
+<section id="id6">
+<h1>Status: Accepted<a class="headerlink" href="#id6" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-unable-to-see-the-type-hint-dataset">
+<h1>Motivation: Unable to see the type hint “Dataset”<a class="headerlink" href="#motivation-unable-to-see-the-type-hint-dataset" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-typevar-can-allow-the-functions-to-work-with-a-specific-type">
+<h1>Reason: TypeVar can allow the functions to work with a specific type,<a class="headerlink" href="#reason-typevar-can-allow-the-functions-to-work-with-a-specific-type" title="Link to this heading"></a></h1>
+</section>
+<section id="which-in-this-case-is-dataset">
+<h1>which in this case is “Dataset”.<a class="headerlink" href="#which-in-this-case-is-dataset" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-it-only-allows-one-type-to-work-with-the-functions-at-a">
+<h1>Limitations: It only allows one type to work with the functions at a<a class="headerlink" href="#limitations-it-only-allows-one-type-to-work-with-the-functions-at-a" title="Link to this heading"></a></h1>
+</section>
+<section id="time">
+<h1>time.<a class="headerlink" href="#time" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-union-if-we-want-to-allow-multiple-types">
+<h1>Alternatives: Union (if we want to allow multiple types).<a class="headerlink" href="#alternatives-union-if-we-want-to-allow-multiple-types" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0005-usage-of-np-argmax">
+<h1>DSC-0005: Usage of np.argmax<a class="headerlink" href="#dsc-0005-usage-of-np-argmax" title="Link to this heading"></a></h1>
+</section>
+<section id="date-2024-11-01">
+<h1>Date: 2024-11-01<a class="headerlink" href="#date-2024-11-01" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-using-np-argmax-in-pipeline-when-categorical-data-is-one-hot">
+<h1>Decision: Using np.argmax in pipeline when categorical data is one-hot<a class="headerlink" href="#decision-using-np-argmax-in-pipeline-when-categorical-data-is-one-hot" title="Link to this heading"></a></h1>
+</section>
+<section id="encoded">
+<h1>encoded<a class="headerlink" href="#encoded" title="Link to this heading"></a></h1>
+</section>
+<section id="id7">
+<h1>Status: Accepted<a class="headerlink" href="#id7" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-to-be-able-to-use-sklearn-models-chosen-for-this-project">
+<h1>Motivation: To be able to use sklearn models (chosen for this project)<a class="headerlink" href="#motivation-to-be-able-to-use-sklearn-models-chosen-for-this-project" title="Link to this heading"></a></h1>
+</section>
+<section id="which-require-ground-truth-in-a-1d-array">
+<h1>which require ground truth in a 1D array.<a class="headerlink" href="#which-require-ground-truth-in-a-1d-array" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-when-the-one-hot-encoder-is-used-for-categorical-data-it-places">
+<h1>Reason: When the one-hot encoder is used for categorical data, it places<a class="headerlink" href="#reason-when-the-one-hot-encoder-is-used-for-categorical-data-it-places" title="Link to this heading"></a></h1>
+</section>
+<section id="each-category-into-a-separate-column-this-was-not-a-1d-array-as-needed">
+<h1>each category into a separate column. This was not a 1D array as needed<a class="headerlink" href="#each-category-into-a-separate-column-this-was-not-a-1d-array-as-needed" title="Link to this heading"></a></h1>
+</section>
+<section id="for-calculations-so-np-argmax-is-used-to-group-each-category-in-one-column">
+<h1>for calculations, so np.argmax is used to group each category in one column<a class="headerlink" href="#for-calculations-so-np-argmax-is-used-to-group-each-category-in-one-column" title="Link to this heading"></a></h1>
+</section>
+<section id="with-specific-labels-for-each-category-0-0-0-1-1-2-allowing">
+<h1>with specific labels for each category (0,0,0,1,1,2…), allowing<a class="headerlink" href="#with-specific-labels-for-each-category-0-0-0-1-1-2-allowing" title="Link to this heading"></a></h1>
+</section>
+<section id="calculations-to-be-done-without-any-dimension-errors">
+<h1>calculations to be done without any dimension errors.<a class="headerlink" href="#calculations-to-be-done-without-any-dimension-errors" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-data-needs-to-be-one-hot-encoded-for-np-argmax-to-work-as">
+<h1>Limitations: Data needs to be one-hot encoded for np.argmax to work as<a class="headerlink" href="#limitations-data-needs-to-be-one-hot-encoded-for-np-argmax-to-work-as" title="Link to this heading"></a></h1>
+</section>
+<section id="intended">
+<h1>intended.<a class="headerlink" href="#intended" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-labelencoder">
+<h1>Alternatives: LabelEncoder<a class="headerlink" href="#alternatives-labelencoder" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0006-importing-is-numeric-dtype-from-pandas-api-types">
+<h1>DSC-0006: Importing is_numeric_dtype from pandas.api.types<a class="headerlink" href="#dsc-0006-importing-is-numeric-dtype-from-pandas-api-types" title="Link to this heading"></a></h1>
+</section>
+<section id="id8">
+<h1>Date: 2024-11-01<a class="headerlink" href="#id8" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-using-is-numeric-type-from-pandas-to-check-if-a-column-is">
+<h1>Decision: Using is_numeric_type from pandas to check if a column is<a class="headerlink" href="#decision-using-is-numeric-type-from-pandas-to-check-if-a-column-is" title="Link to this heading"></a></h1>
+</section>
+<section id="numeric-for-feature-detection">
+<h1>numeric for feature detection.<a class="headerlink" href="#numeric-for-feature-detection" title="Link to this heading"></a></h1>
+</section>
+<section id="id9">
+<h1>Status: Accepted<a class="headerlink" href="#id9" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-lack-of-a-function-to-check-feature-type-of-the-columns">
+<h1>Motivation: Lack of a function to check feature type of the columns.<a class="headerlink" href="#motivation-lack-of-a-function-to-check-feature-type-of-the-columns" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-checks-if-a-column-is-numerical-so-that-we-can-inform-the-reader">
+<h1>Reason: Checks if a column is numerical so that we can inform the reader<a class="headerlink" href="#reason-checks-if-a-column-is-numerical-so-that-we-can-inform-the-reader" title="Link to this heading"></a></h1>
+</section>
+<section id="about-the-feature-type-of-selected-columns-allowing-proper-models-for">
+<h1>about the feature type of selected columns, allowing proper models for<a class="headerlink" href="#about-the-feature-type-of-selected-columns-allowing-proper-models-for" title="Link to this heading"></a></h1>
+</section>
+<section id="training-and-predictions">
+<h1>training and predictions.<a class="headerlink" href="#training-and-predictions" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-if-a-column-has-both-numeric-and-categorical-data-it-wont">
+<h1>Limitations: If a column has both numeric and categorical data, it won’t<a class="headerlink" href="#limitations-if-a-column-has-both-numeric-and-categorical-data-it-wont" title="Link to this heading"></a></h1>
+</section>
+<section id="work-properly">
+<h1>work properly.<a class="headerlink" href="#work-properly" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-use-a-for-loop-to-check-each-row-in-the-column-with">
+<h1>Alternatives: Use a for loop to check each row in the column with “<a class="headerlink" href="#alternatives-use-a-for-loop-to-check-each-row-in-the-column-with" title="Link to this heading"></a></h1>
+</section>
+<section id="is-instance">
+<h1>is_instance()”.<a class="headerlink" href="#is-instance" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0007-usage-of-st-session-state">
+<h1>DSC-0007: Usage of st.session_state<a class="headerlink" href="#dsc-0007-usage-of-st-session-state" title="Link to this heading"></a></h1>
+</section>
+<section id="id10">
+<h1>Date: 2024-11-01<a class="headerlink" href="#id10" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-using-st-session-state-to-initialize-objects-so-their">
+<h1>Decision: Using st.session_state to initialize objects, so their<a class="headerlink" href="#decision-using-st-session-state-to-initialize-objects-so-their" title="Link to this heading"></a></h1>
+</section>
+<section id="information-is-stored-during-interactions">
+<h1>information is stored during interactions.<a class="headerlink" href="#information-is-stored-during-interactions" title="Link to this heading"></a></h1>
+</section>
+<section id="id11">
+<h1>Status: Accepted<a class="headerlink" href="#id11" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-without-it-the-object-s-information-would-be-lost-for-the-next">
+<h1>Motivation: Without it, the object’s information would be lost for the next<a class="headerlink" href="#motivation-without-it-the-object-s-information-would-be-lost-for-the-next" title="Link to this heading"></a></h1>
+</section>
+<section id="interaction-due-to-streamlits-behavior">
+<h1>interaction due to Streamlit’s behavior.<a class="headerlink" href="#interaction-due-to-streamlits-behavior" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-tas-recommended-using-classes-making-page-creation-complex">
+<h1>Reason: TAs recommended using classes, making page creation complex.<a class="headerlink" href="#reason-tas-recommended-using-classes-making-page-creation-complex" title="Link to this heading"></a></h1>
+</section>
+<section id="st-session-state-allows-the-app-to-keep-data-available-during-runtime">
+<h1>st.session_state allows the app to keep data available during runtime,<a class="headerlink" href="#st-session-state-allows-the-app-to-keep-data-available-during-runtime" title="Link to this heading"></a></h1>
+</section>
+<section id="which-is-useful-when-we-want-to-keep-the-object-data-reachable-during">
+<h1>which is useful when we want to keep the object data reachable during<a class="headerlink" href="#which-is-useful-when-we-want-to-keep-the-object-data-reachable-during" title="Link to this heading"></a></h1>
+</section>
+<section id="functionality">
+<h1>functionality.<a class="headerlink" href="#functionality" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-st-session-state-is-specific-to-streamlit-so-it-binds-the-data">
+<h1>Limitations: st.session_state is specific to Streamlit, so it binds the data<a class="headerlink" href="#limitations-st-session-state-is-specific-to-streamlit-so-it-binds-the-data" title="Link to this heading"></a></h1>
+</section>
+<section id="to-streamlit">
+<h1>to Streamlit.<a class="headerlink" href="#to-streamlit" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-use-a-database-to-persist-data-across-interactions-without">
+<h1>Alternatives: Use a database to persist data across interactions without<a class="headerlink" href="#alternatives-use-a-database-to-persist-data-across-interactions-without" title="Link to this heading"></a></h1>
+</section>
+<section id="losing-information">
+<h1>losing information.<a class="headerlink" href="#losing-information" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0008-addition-of-def-find-feature">
+<h1>DSC-0008: Addition of def _find_feature()<a class="headerlink" href="#dsc-0008-addition-of-def-find-feature" title="Link to this heading"></a></h1>
+</section>
+<section id="id12">
+<h1>Date: 2024-11-01<a class="headerlink" href="#id12" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-addition-of-a-function-to-prevent-code-smells">
+<h1>Decision: Addition of a function to prevent code smells.<a class="headerlink" href="#decision-addition-of-a-function-to-prevent-code-smells" title="Link to this heading"></a></h1>
+</section>
+<section id="id13">
+<h1>Status: Accepted<a class="headerlink" href="#id13" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-before-this-function-a-code-block-was-duplicated-for-the-same">
+<h1>Motivation: Before this function, a code block was duplicated for the same<a class="headerlink" href="#motivation-before-this-function-a-code-block-was-duplicated-for-the-same" title="Link to this heading"></a></h1>
+</section>
+<section id="id14">
+<h1>functionality.<a class="headerlink" href="#id14" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-this-function-finds-the-feature-types-of-both-input-and-target">
+<h1>Reason: This function finds the feature types of both input and target<a class="headerlink" href="#reason-this-function-finds-the-feature-types-of-both-input-and-target" title="Link to this heading"></a></h1>
+</section>
+<section id="features-provided-by-the-user-it-is-called-on-input-and-target-features">
+<h1>features provided by the user. It is called on input and target features,<a class="headerlink" href="#features-provided-by-the-user-it-is-called-on-input-and-target-features" title="Link to this heading"></a></h1>
+</section>
+<section id="iterating-to-return-their-types-numerical-or-categorical">
+<h1>iterating to return their types (numerical or categorical).<a class="headerlink" href="#iterating-to-return-their-types-numerical-or-categorical" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-this-function-is-implemented-in-this-class-only-to-reuse-we">
+<h1>Limitations: This function is implemented in this class only; to reuse, we<a class="headerlink" href="#limitations-this-function-is-implemented-in-this-class-only-to-reuse-we" title="Link to this heading"></a></h1>
+</section>
+<section id="must-inherit-it-or-repeat-the-code">
+<h1>must inherit it or repeat the code.<a class="headerlink" href="#must-inherit-it-or-repeat-the-code" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-use-separate-list-comprehensions-for-each-feature-detection">
+<h1>Alternatives: Use separate list comprehensions for each feature detection<a class="headerlink" href="#alternatives-use-separate-list-comprehensions-for-each-feature-detection" title="Link to this heading"></a></h1>
+</section>
+<section id="may-cause-code-repetition">
+<h1>(may cause code repetition).<a class="headerlink" href="#may-cause-code-repetition" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0009-usage-of-st-number-input">
+<h1>DSC-0009: Usage of st.number_input()<a class="headerlink" href="#dsc-0009-usage-of-st-number-input" title="Link to this heading"></a></h1>
+</section>
+<section id="date-2024-11-03">
+<h1>Date: 2024-11-03<a class="headerlink" href="#date-2024-11-03" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-allow-users-to-input-the-split-value-for-train-split">
+<h1>Decision: Allow users to input the split value for train-split.<a class="headerlink" href="#decision-allow-users-to-input-the-split-value-for-train-split" title="Link to this heading"></a></h1>
+</section>
+<section id="id15">
+<h1>Status: Accepted<a class="headerlink" href="#id15" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-allow-users-to-change-the-default-split-value-0-8-as-needed">
+<h1>Motivation: Allow users to change the default split value (0.8) as needed.<a class="headerlink" href="#motivation-allow-users-to-change-the-default-split-value-0-8-as-needed" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-this-streamlit-function-allows-the-user-to-input-their-split-value">
+<h1>Reason: This Streamlit function allows the user to input their split value<a class="headerlink" href="#reason-this-streamlit-function-allows-the-user-to-input-their-split-value" title="Link to this heading"></a></h1>
+</section>
+<section id="for-training-based-on-that-proportion-however-we-limited-them-to-a-max-value">
+<h1>for training based on that proportion, however we limited them to a max value<a class="headerlink" href="#for-training-based-on-that-proportion-however-we-limited-them-to-a-max-value" title="Link to this heading"></a></h1>
+</section>
+<section id="of-90-and-min-of-10-to-force-the-test-split">
+<h1>of 90 and min of 10 to force the test-split.<a class="headerlink" href="#of-90-and-min-of-10-to-force-the-test-split" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-if-no-input-is-provided-the-default-split-value-is-used">
+<h1>Limitations: If no input is provided, the default split value is used.<a class="headerlink" href="#limitations-if-no-input-is-provided-the-default-split-value-is-used" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-use-a-dropdown-menu-for-preset-values-instead-of-allowing">
+<h1>Alternatives: Use a dropdown menu for preset values instead of allowing<a class="headerlink" href="#alternatives-use-a-dropdown-menu-for-preset-values-instead-of-allowing" title="Link to this heading"></a></h1>
+</section>
+<section id="arbitrary-input">
+<h1>arbitrary input.<a class="headerlink" href="#arbitrary-input" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0010-usage-of-regex-for-pretty-printing">
+<h1>DSC-0010: Usage of regex for pretty printing<a class="headerlink" href="#dsc-0010-usage-of-regex-for-pretty-printing" title="Link to this heading"></a></h1>
+</section>
+<section id="id16">
+<h1>Date: 2024-11-03<a class="headerlink" href="#id16" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-use-regex-to-display-the-pipeline-in-a-readable-format">
+<h1>Decision: Use regex to display the pipeline in a readable format.<a class="headerlink" href="#decision-use-regex-to-display-the-pipeline-in-a-readable-format" title="Link to this heading"></a></h1>
+</section>
+<section id="id17">
+<h1>Status: Accepted<a class="headerlink" href="#id17" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-improve-readability-of-the-pipeline-summary">
+<h1>Motivation: Improve readability of the pipeline summary.<a class="headerlink" href="#motivation-improve-readability-of-the-pipeline-summary" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-regex-extracts-and-formats-details-like-model-type-input-features">
+<h1>Reason: Regex extracts and formats details like model type, input features,<a class="headerlink" href="#reason-regex-extracts-and-formats-details-like-model-type-input-features" title="Link to this heading"></a></h1>
+</section>
+<section id="target-features-split-ratio-and-metrics-selected-by-the-user-to-display-as">
+<h1>target features, split ratio, and metrics selected by the user to display as<a class="headerlink" href="#target-features-split-ratio-and-metrics-selected-by-the-user-to-display-as" title="Link to this heading"></a></h1>
+</section>
+<section id="a-readable-summary">
+<h1>a readable summary.<a class="headerlink" href="#a-readable-summary" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-regex-may-fail-if-the-pipeline-format-changes-making-it-unable">
+<h1>Limitations: Regex may fail if the pipeline format changes, making it unable<a class="headerlink" href="#limitations-regex-may-fail-if-the-pipeline-format-changes-making-it-unable" title="Link to this heading"></a></h1>
+</section>
+<section id="to-extract-key-features">
+<h1>to extract key features.<a class="headerlink" href="#to-extract-key-features" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-use-json-to-display-pipeline-summary-in-dictionary-format">
+<h1>Alternatives: Use JSON to display pipeline summary in dictionary format.<a class="headerlink" href="#alternatives-use-json-to-display-pipeline-summary-in-dictionary-format" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0011-usage-of-pickle-for-saving-and-loading">
+<h1>DSC-0011: Usage of pickle for saving and loading<a class="headerlink" href="#dsc-0011-usage-of-pickle-for-saving-and-loading" title="Link to this heading"></a></h1>
+</section>
+<section id="id18">
+<h1>Date: 2024-11-03<a class="headerlink" href="#id18" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-use-pickle-to-save-the-pipeline-as-an-artifact">
+<h1>Decision: Use pickle to save the pipeline as an artifact.<a class="headerlink" href="#decision-use-pickle-to-save-the-pipeline-as-an-artifact" title="Link to this heading"></a></h1>
+</section>
+<section id="id19">
+<h1>Status: Accepted<a class="headerlink" href="#id19" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-save-the-pipeline-in-st-session-state-with-all-data-included">
+<h1>Motivation: Save the pipeline in st.session_state with all data included.<a class="headerlink" href="#motivation-save-the-pipeline-in-st-session-state-with-all-data-included" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-pickle-allows-saving-and-loading-across-sessions-letting-users">
+<h1>Reason: Pickle allows saving and loading across sessions, letting users<a class="headerlink" href="#reason-pickle-allows-saving-and-loading-across-sessions-letting-users" title="Link to this heading"></a></h1>
+</section>
+<section id="reuse-a-saved-model-for-further-predictions">
+<h1>reuse a saved model for further predictions.<a class="headerlink" href="#reuse-a-saved-model-for-further-predictions" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-pickle-artifacts-are-unreadable-when-opening-the-file-path">
+<h1>Limitations: Pickle artifacts are unreadable when opening the file path.<a class="headerlink" href="#limitations-pickle-artifacts-are-unreadable-when-opening-the-file-path" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-use-json-for-pipeline-storage-and-retrieval">
+<h1>Alternatives: Use JSON for pipeline storage and retrieval.<a class="headerlink" href="#alternatives-use-json-for-pipeline-storage-and-retrieval" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0012-addition-of-prediction-function-in-deployment-page">
+<h1>DSC-0012: Addition of _prediction() function in deployment page<a class="headerlink" href="#dsc-0012-addition-of-prediction-function-in-deployment-page" title="Link to this heading"></a></h1>
+</section>
+<section id="date-2024-11-05">
+<h1>Date: 2024-11-05<a class="headerlink" href="#date-2024-11-05" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-create-a-function-to-let-users-upload-a-csv-file-and-make">
+<h1>Decision: Create a function to let users upload a CSV file and make<a class="headerlink" href="#decision-create-a-function-to-let-users-upload-a-csv-file-and-make" title="Link to this heading"></a></h1>
+</section>
+<section id="predictions-with-the-selected-pipeline">
+<h1>predictions with the selected pipeline.<a class="headerlink" href="#predictions-with-the-selected-pipeline" title="Link to this heading"></a></h1>
+</section>
+<section id="id20">
+<h1>Status: Accepted<a class="headerlink" href="#id20" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-let-users-upload-a-new-csv-select-features-and-make-predictions">
+<h1>Motivation: Let users upload a new CSV, select features, and make predictions<a class="headerlink" href="#motivation-let-users-upload-a-new-csv-select-features-and-make-predictions" title="Link to this heading"></a></h1>
+</section>
+<section id="on-the-saved-pipeline-in-a-single-function">
+<h1>on the saved pipeline in a single function.<a class="headerlink" href="#on-the-saved-pipeline-in-a-single-function" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-this-function-allows-the-user-to-upload-a-dataset-select-features">
+<h1>Reason: This function allows the user to upload a dataset, select features,<a class="headerlink" href="#reason-this-function-allows-the-user-to-upload-a-dataset-select-features" title="Link to this heading"></a></h1>
+</section>
+<section id="and-make-predictions-in-the-app">
+<h1>and make predictions in the app.<a class="headerlink" href="#and-make-predictions-in-the-app" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-the-pickle-artifact-is-unreadable-when-opened-directly">
+<h1>Limitations: The pickle artifact is unreadable when opened directly.<a class="headerlink" href="#limitations-the-pickle-artifact-is-unreadable-when-opened-directly" title="Link to this heading"></a></h1>
+</section>
+<section id="id21">
+<h1>Alternatives: Use JSON for pipeline storage and retrieval.<a class="headerlink" href="#id21" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0013-creating-a-pipeline-options-variable-in-deployment-page">
+<h1>DSC-0013: creating a pipeline_options variable in Deployment page.<a class="headerlink" href="#dsc-0013-creating-a-pipeline-options-variable-in-deployment-page" title="Link to this heading"></a></h1>
+</section>
+<section id="id22">
+<h1>Date: 2024-11-05<a class="headerlink" href="#id22" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-use-comprehensions-in-order-to-get-the-name-and-the-version">
+<h1>Decision: Use comprehensions in order to get the name and the version<a class="headerlink" href="#decision-use-comprehensions-in-order-to-get-the-name-and-the-version" title="Link to this heading"></a></h1>
+</section>
+<section id="of-the-saved-pipeline-in-one-option-for-the-user-view">
+<h1>of the saved pipeline in one option(for the user view)<a class="headerlink" href="#of-the-saved-pipeline-in-one-option-for-the-user-view" title="Link to this heading"></a></h1>
+</section>
+<section id="id23">
+<h1>Status: Accepted<a class="headerlink" href="#id23" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-when-we-provided-the-dropdown-menu-we-saw-that-the-user">
+<h1>Motivation: When we provided the dropdown menu we saw that the user<a class="headerlink" href="#motivation-when-we-provided-the-dropdown-menu-we-saw-that-the-user" title="Link to this heading"></a></h1>
+</section>
+<section id="can-only-see-the-name-of-their-saved-pipeline-so-we-wanted-to-provide-them">
+<h1>can only see the name of their saved pipeline, so we wanted to provide them<a class="headerlink" href="#can-only-see-the-name-of-their-saved-pipeline-so-we-wanted-to-provide-them" title="Link to this heading"></a></h1>
+</section>
+<section id="with-the-version-as-well-to-prevent-the-overriding-of-the-model">
+<h1>with the version as well to prevent the overriding of the model<a class="headerlink" href="#with-the-version-as-well-to-prevent-the-overriding-of-the-model" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-we-decided-to-use-the-comprehension-since-it-will-return-a-dictionary">
+<h1>Reason: we decided to use the comprehension since it will return a dictionary<a class="headerlink" href="#reason-we-decided-to-use-the-comprehension-since-it-will-return-a-dictionary" title="Link to this heading"></a></h1>
+</section>
+<section id="of-keys-which-are-the-name-and-version-of-the-saved-pipeline-so-that-user">
+<h1>of keys which are the name and version of the saved pipeline, so that user<a class="headerlink" href="#of-keys-which-are-the-name-and-version-of-the-saved-pipeline-so-that-user" title="Link to this heading"></a></h1>
+</section>
+<section id="can-choose-the-pipeline-based-on-both-its-name-and-version">
+<h1>can choose the pipeline based on both its name and version<a class="headerlink" href="#can-choose-the-pipeline-based-on-both-its-name-and-version" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-if-the-user-saves-different-models-with-same-name-and-version">
+<h1>Limitations: if the user saves different models with same name and version<a class="headerlink" href="#limitations-if-the-user-saves-different-models-with-same-name-and-version" title="Link to this heading"></a></h1>
+</section>
+<section id="this-will-not-work-since-the-keys-must-be-unique">
+<h1>this will not work since the keys must be unique.<a class="headerlink" href="#this-will-not-work-since-the-keys-must-be-unique" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-for-loop-to-get-the-name-and-version">
+<h1>Alternatives: for loop to get the name and version<a class="headerlink" href="#alternatives-for-loop-to-get-the-name-and-version" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0014-removal-of-the-get-params-in-preprocessing-py">
+<h1>DSC-0014: Removal of the .get_params() in preprocessing.py<a class="headerlink" href="#dsc-0014-removal-of-the-get-params-in-preprocessing-py" title="Link to this heading"></a></h1>
+</section>
+<section id="date-2024-11-08">
+<h1>Date: 2024-11-08<a class="headerlink" href="#date-2024-11-08" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-returning-the-instance-of-the-onehotencoder-standardscaler-instead">
+<h1>Decision: Returning the instance of the OneHotEncoder, StandardScaler instead<a class="headerlink" href="#decision-returning-the-instance-of-the-onehotencoder-standardscaler-instead" title="Link to this heading"></a></h1>
+</section>
+<section id="of-the-parameters">
+<h1>of the parameters.<a class="headerlink" href="#of-the-parameters" title="Link to this heading"></a></h1>
+</section>
+<section id="id24">
+<h1>Status: Accepted<a class="headerlink" href="#id24" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-we-were-not-able-to-get-the-inverse-transformation-of-the">
+<h1>Motivation: We were not able to get the inverse transformation of the<a class="headerlink" href="#motivation-we-were-not-able-to-get-the-inverse-transformation-of-the" title="Link to this heading"></a></h1>
+</section>
+<section id="encoders-without-having-an-instance-of-them">
+<h1>encoders without having an instance of them<a class="headerlink" href="#encoders-without-having-an-instance-of-them" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-in-order-to-display-the-proper-and-meaningful-results-we-decided">
+<h1>Reason: In order to display the proper and meaningful results, we decided<a class="headerlink" href="#reason-in-order-to-display-the-proper-and-meaningful-results-we-decided" title="Link to this heading"></a></h1>
+</section>
+<section id="the-best-solution-would-be-to-return-the-instances-of-the-encoders-this">
+<h1>the best solution would be to return the instances of the encoders. This<a class="headerlink" href="#the-best-solution-would-be-to-return-the-instances-of-the-encoders-this" title="Link to this heading"></a></h1>
+</section>
+<section id="allows-us-to-use-them-to-either-get-the-categorical-values-in-the-correct">
+<h1>allows us to use them to either get the categorical values in the correct<a class="headerlink" href="#allows-us-to-use-them-to-either-get-the-categorical-values-in-the-correct" title="Link to this heading"></a></h1>
+</section>
+<section id="order-classification-or-to-be-able-to-inverse-transform-our-values">
+<h1>order (classification) or to be able to inverse transform our values<a class="headerlink" href="#order-classification-or-to-be-able-to-inverse-transform-our-values" title="Link to this heading"></a></h1>
+</section>
+<section id="regression-we-noticed-that-we-were-not-using-the-self-artifact-which">
+<h1>(regression). We noticed that we were not using the “self._artifact”, which<a class="headerlink" href="#regression-we-noticed-that-we-were-not-using-the-self-artifact-which" title="Link to this heading"></a></h1>
+</section>
+<section id="allowed-us-to-just-remove-the-get-params-and-the-pipeline-already-had-an">
+<h1>allowed us to just remove the .get_params() and the pipeline already had an<a class="headerlink" href="#allowed-us-to-just-remove-the-get-params-and-the-pipeline-already-had-an" title="Link to this heading"></a></h1>
+</section>
+<section id="implementation-register-artifact-to-deal-with-storing-of-the-encoders">
+<h1>implementation (_register_artifact()) to deal with storing of the encoders.<a class="headerlink" href="#implementation-register-artifact-to-deal-with-storing-of-the-encoders" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-if-we-would-need-to-use-the-parameters-of-the-encoders-we">
+<h1>Limitations: If we would need to use the parameters of the encoders, we<a class="headerlink" href="#limitations-if-we-would-need-to-use-the-parameters-of-the-encoders-we" title="Link to this heading"></a></h1>
+</section>
+<section id="would-have-to-get-the-stored-model-and-then-add-get-params">
+<h1>would have to get the stored model and then add .get_params().<a class="headerlink" href="#would-have-to-get-the-stored-model-and-then-add-get-params" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-we-could-not-use-a-scaler-or-we-could-provide-the-user">
+<h1>Alternatives: We could not use a scaler or we could provide the user<a class="headerlink" href="#alternatives-we-could-not-use-a-scaler-or-we-could-provide-the-user" title="Link to this heading"></a></h1>
+</section>
+<section id="with-the-scaled-data">
+<h1>with the scaled data.<a class="headerlink" href="#with-the-scaled-data" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0015-addition-of-add-parameters-in-model-class">
+<h1>DSC-0015: addition of add_parameters() in Model class.<a class="headerlink" href="#dsc-0015-addition-of-add-parameters-in-model-class" title="Link to this heading"></a></h1>
+</section>
+<section id="id25">
+<h1>Date: 2024-11-08<a class="headerlink" href="#id25" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-creating-a-setter-function-for-the-property">
+<h1>Decision: Creating a setter function for the &#64;property<a class="headerlink" href="#decision-creating-a-setter-function-for-the-property" title="Link to this heading"></a></h1>
+</section>
+<section id="parameters-getter-with-a-different-name">
+<h1>parameters() getter with a different name.<a class="headerlink" href="#parameters-getter-with-a-different-name" title="Link to this heading"></a></h1>
+</section>
+<section id="id26">
+<h1>Status: Accepted<a class="headerlink" href="#id26" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-if-we-created-a-setter-for-the-getter-function-parameter">
+<h1>Motivation: If we created a setter for the getter function parameter()<a class="headerlink" href="#motivation-if-we-created-a-setter-for-the-getter-function-parameter" title="Link to this heading"></a></h1>
+</section>
+<section id="with-the-same-name-parameters-setter-it-would-override-the-whole">
+<h1>with the same name “parameters.setter”, it would override the whole<a class="headerlink" href="#with-the-same-name-parameters-setter-it-would-override-the-whole" title="Link to this heading"></a></h1>
+</section>
+<section id="dictionary-without-keeping-the-existing-parameters">
+<h1>dictionary without keeping the existing parameters.<a class="headerlink" href="#dictionary-without-keeping-the-existing-parameters" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-creation-of-this-function-allows-the-adding-and-updating">
+<h1>Reason: Creation of this function allows the adding and updating<a class="headerlink" href="#reason-creation-of-this-function-allows-the-adding-and-updating" title="Link to this heading"></a></h1>
+</section>
+<section id="the-parameters-in-a-safe-environment-while-keeping-the-existing">
+<h1>the parameters in a safe environment while keeping the existing<a class="headerlink" href="#the-parameters-in-a-safe-environment-while-keeping-the-existing" title="Link to this heading"></a></h1>
+</section>
+<section id="parameters-in-the-dictionary-without-overriding-the-information">
+<h1>parameters in the dictionary without overriding the information.<a class="headerlink" href="#parameters-in-the-dictionary-without-overriding-the-information" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-if-the-whole-dictionary-wants-to-be-overridden">
+<h1>Limitations: If the whole dictionary wants to be overridden<a class="headerlink" href="#limitations-if-the-whole-dictionary-wants-to-be-overridden" title="Link to this heading"></a></h1>
+</section>
+<section id="without-keeping-any-existing-parameters-this-function-won-t-work">
+<h1>without keeping any existing parameters, this function won’t work.<a class="headerlink" href="#without-keeping-any-existing-parameters-this-function-won-t-work" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-addition-of-update-paramters-to-handle-the-updating-of">
+<h1>Alternatives: Addition of update_paramters() to handle the updating of<a class="headerlink" href="#alternatives-addition-of-update-paramters-to-handle-the-updating-of" title="Link to this heading"></a></h1>
+</section>
+<section id="the-parameters-dictionary">
+<h1>the parameters dictionary.<a class="headerlink" href="#the-parameters-dictionary" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0016-two-getters-for-self-data-in-artifact-py">
+<h1>DSC-0016: Two getters for self._data in artifact.py<a class="headerlink" href="#dsc-0016-two-getters-for-self-data-in-artifact-py" title="Link to this heading"></a></h1>
+</section>
+<section id="id27">
+<h1>Date: 2024-11-08<a class="headerlink" href="#id27" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-keep-the-two-getters-in-artifact-py">
+<h1>Decision: Keep the two getters in artifact.py<a class="headerlink" href="#decision-keep-the-two-getters-in-artifact-py" title="Link to this heading"></a></h1>
+</section>
+<section id="id28">
+<h1>Status: Accepted<a class="headerlink" href="#id28" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-since-we-made-the-self-data-private-for-system-py-to-work-it">
+<h1>Motivation: Since we made the self._data private, for system.py to work, it<a class="headerlink" href="#motivation-since-we-made-the-self-data-private-for-system-py-to-work-it" title="Link to this heading"></a></h1>
+</section>
+<section id="needs-to-be-able-to-access-data-this-is-why-the-getter-data-was-created">
+<h1>needs to be able to access data, This is why the getter “data” was created.<a class="headerlink" href="#needs-to-be-able-to-access-data-this-is-why-the-getter-data-was-created" title="Link to this heading"></a></h1>
+</section>
+<section id="the-provided-implementation-of-dataset-requires-there-to-be-a-save-and-a-read">
+<h1>The provided implementation of dataset requires there to be a save and a read<a class="headerlink" href="#the-provided-implementation-of-dataset-requires-there-to-be-a-save-and-a-read" title="Link to this heading"></a></h1>
+</section>
+<section id="method-present-in-the-parent">
+<h1>method present in the parent.<a class="headerlink" href="#method-present-in-the-parent" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-self-data-has-two-getters-and-both-are-needed-based-on-provided">
+<h1>Reason: self._data has two getters, and both are needed based on provided<a class="headerlink" href="#reason-self-data-has-two-getters-and-both-are-needed-based-on-provided" title="Link to this heading"></a></h1>
+</section>
+<section id="child-class-dataset-and-system-py-dataset-required-read-and-save-methods">
+<h1>child class (dataset) and system.py. Dataset required read and save methods<a class="headerlink" href="#child-class-dataset-and-system-py-dataset-required-read-and-save-methods" title="Link to this heading"></a></h1>
+</section>
+<section id="to-be-implemented-in-the-parent-class-and-system-py-requires-a-getter">
+<h1>to be implemented in the parent class, and system.py requires a getter<a class="headerlink" href="#to-be-implemented-in-the-parent-class-and-system-py-requires-a-getter" title="Link to this heading"></a></h1>
+</section>
+<section id="for-data">
+<h1>for data.<a class="headerlink" href="#for-data" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-code-is-repeated">
+<h1>Limitations: Code is repeated<a class="headerlink" href="#limitations-code-is-repeated" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-change-the-code-in-system-py-we-were-told-not-to-change">
+<h1>Alternatives: Change the code in system.py (we were told not to change<a class="headerlink" href="#alternatives-change-the-code-in-system-py-we-were-told-not-to-change" title="Link to this heading"></a></h1>
+</section>
+<section id="anything-in-already-implemented-code">
+<h1>anything in already implemented code).<a class="headerlink" href="#anything-in-already-implemented-code" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0017-parameters-not-used-for-fit-and-predict-skleran-wrappers">
+<h1>DSC-0017: Parameters not used for fit and predict skleran wrappers.<a class="headerlink" href="#dsc-0017-parameters-not-used-for-fit-and-predict-skleran-wrappers" title="Link to this heading"></a></h1>
+</section>
+<section id="date-2024-11-09">
+<h1>Date: 2024-11-09<a class="headerlink" href="#date-2024-11-09" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-not-using-parameters-for-the-predict-method">
+<h1>Decision: Not using parameters for the predict method.<a class="headerlink" href="#decision-not-using-parameters-for-the-predict-method" title="Link to this heading"></a></h1>
+</section>
+<section id="id29">
+<h1>Status: Accepted<a class="headerlink" href="#id29" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-the-sklearn-wrappers-already-store-the-necessary-parameters-to">
+<h1>Motivation: The sklearn wrappers already store the necessary parameters to<a class="headerlink" href="#motivation-the-sklearn-wrappers-already-store-the-necessary-parameters-to" title="Link to this heading"></a></h1>
+</section>
+<section id="create-predictions-thats-why-we-do-not-store-them-for-the-purpose-of">
+<h1>create predictions, thats why we do not store them for the purpose of<a class="headerlink" href="#create-predictions-thats-why-we-do-not-store-them-for-the-purpose-of" title="Link to this heading"></a></h1>
+</section>
+<section id="retrieving-them-and-using-them-for-the-prediction-this-is-done-automatically">
+<h1>retrieving them and using them for the prediction. This is done automatically<a class="headerlink" href="#retrieving-them-and-using-them-for-the-prediction-this-is-done-automatically" title="Link to this heading"></a></h1>
+</section>
+<section id="by-sklearn-they-are-stored-because-of-the-requirements-of-the-test-pipeline">
+<h1>by sklearn. They are stored because of the requirements of the test_pipeline<a class="headerlink" href="#by-sklearn-they-are-stored-because-of-the-requirements-of-the-test-pipeline" title="Link to this heading"></a></h1>
+</section>
+<section id="which-requires-there-to-be-a-parameters-dictionary-and-in-case-of-future">
+<h1>which requires there to be a  parameters dictionary, and in case of future<a class="headerlink" href="#which-requires-there-to-be-a-parameters-dictionary-and-in-case-of-future" title="Link to this heading"></a></h1>
+</section>
+<section id="expansions">
+<h1>expansions.<a class="headerlink" href="#expansions" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-using-the-parameters-in-the-predict-method-of-sklearn-wrappers">
+<h1>Reason: Using the parameters in the predict method of sklearn wrappers<a class="headerlink" href="#reason-using-the-parameters-in-the-predict-method-of-sklearn-wrappers" title="Link to this heading"></a></h1>
+</section>
+<section id="would-be-redundant">
+<h1>would be redundant.<a class="headerlink" href="#would-be-redundant" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-none-since-we-still-assign-the-parameters-to-the-parameters">
+<h1>Limitations: None, since we still assign the parameters to the parameters<a class="headerlink" href="#limitations-none-since-we-still-assign-the-parameters-to-the-parameters" title="Link to this heading"></a></h1>
+</section>
+<section id="dictionary-incase-we-would-like-to-use-it">
+<h1>dictionary incase we would like to use it.<a class="headerlink" href="#dictionary-incase-we-would-like-to-use-it" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-we-could-use-the-parameters-to-create-predictions">
+<h1>Alternatives: We could use the parameters to create predictions,<a class="headerlink" href="#alternatives-we-could-use-the-parameters-to-create-predictions" title="Link to this heading"></a></h1>
+</section>
+<section id="however-that-would-be-redundant">
+<h1>however that would be redundant.<a class="headerlink" href="#however-that-would-be-redundant" title="Link to this heading"></a></h1>
+</section>
+<section id="dsc-0018-model-abc-is-tailored-for-sklearn">
+<h1>DSC-0018: Model ABC is tailored for sklearn<a class="headerlink" href="#dsc-0018-model-abc-is-tailored-for-sklearn" title="Link to this heading"></a></h1>
+</section>
+<section id="id30">
+<h1>Date: 2024-11-09<a class="headerlink" href="#id30" title="Link to this heading"></a></h1>
+</section>
+<section id="decision-fit-and-predict-in-model-are-tailored-to-sklearn">
+<h1>Decision: Fit and predict in model are tailored to sklearn.<a class="headerlink" href="#decision-fit-and-predict-in-model-are-tailored-to-sklearn" title="Link to this heading"></a></h1>
+</section>
+<section id="id31">
+<h1>Status: Accepted<a class="headerlink" href="#id31" title="Link to this heading"></a></h1>
+</section>
+<section id="motivation-in-order-to-prevent-code-smells-repeating-code">
+<h1>Motivation: In order to prevent code smells (repeating code).<a class="headerlink" href="#motivation-in-order-to-prevent-code-smells-repeating-code" title="Link to this heading"></a></h1>
+</section>
+<section id="reason-since-all-of-our-implemented-models-are-sklearn-wrappers-we-decided">
+<h1>Reason: Since all of our implemented models are sklearn wrappers, we decided<a class="headerlink" href="#reason-since-all-of-our-implemented-models-are-sklearn-wrappers-we-decided" title="Link to this heading"></a></h1>
+</section>
+<section id="to-put-the-generic-fit-and-predict-function-into-the-model-abc-instead-of">
+<h1>to put the generic fit and predict function into the Model ABC instead of<a class="headerlink" href="#to-put-the-generic-fit-and-predict-function-into-the-model-abc-instead-of" title="Link to this heading"></a></h1>
+</section>
+<section id="creating-abstractmethods">
+<h1>creating &#64;abstractmethods.<a class="headerlink" href="#creating-abstractmethods" title="Link to this heading"></a></h1>
+</section>
+<section id="limitations-if-other-non-sklearn-models-would-be-implemented-they-would">
+<h1>Limitations: If other non-sklearn models would be implemented they would<a class="headerlink" href="#limitations-if-other-non-sklearn-models-would-be-implemented-they-would" title="Link to this heading"></a></h1>
+</section>
+<section id="have-to-overwrite-the-fit-and-predict-methods">
+<h1>have to overwrite the fit and predict methods.<a class="headerlink" href="#have-to-overwrite-the-fit-and-predict-methods" title="Link to this heading"></a></h1>
+</section>
+<section id="alternatives-put-the-same-fit-and-predict-methods-in-all-the-models">
+<h1>Alternatives: Put the same fit and predict methods in all the models<a class="headerlink" href="#alternatives-put-the-same-fit-and-predict-methods-in-all-the-models" title="Link to this heading"></a></h1>
+</section>
+<section id="causes-code-smell">
+<h1>(causes code smell).<a class="headerlink" href="#causes-code-smell" title="Link to this heading"></a></h1>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Sohret Oznacar and Mateusz Wasko.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
