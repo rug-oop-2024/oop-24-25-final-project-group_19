@@ -1,7 +1,7 @@
 
 from abc import ABC
 import numpy as np
-from typing import Dict
+from typing import Dict, TypeVar
 from copy import deepcopy
 from sklearn.preprocessing import StandardScaler
 
@@ -11,6 +11,7 @@ class Model(ABC):
     Abstract base class for the fit and predict methods.
     """
     def __init__(self) -> None:
+        """Initializes a Model class with an empty parameters dictionary"""
         self._parameters = {}
 
     def fit(self, observations: np.ndarray, ground_truth: np.ndarray) -> None:
@@ -61,10 +62,12 @@ class Model(ABC):
         self._parameters[key] = value
 
     @property
-    def type(self):
+    def type(self) -> str:
         """Returns the type of the model."""
         return self._type
 
-    def _assign_sklearn_parameters(self, model):
+    ModelObject = TypeVar('Model', bound="Model")
+
+    def _assign_sklearn_parameters(self, model: ModelObject) -> None:
         self.add_parameters("intercept", model.intercept_)
         self.add_parameters("coefficients", model.coef_)

@@ -176,7 +176,7 @@ class Modelling:
             dataset: Dataset,
             input_features: List[Feature],
             target_feature: Feature,
-            split_value) -> None:
+            split_value: float) -> None:
         """Execute the pipeline with selected configurations.
 
         Args:

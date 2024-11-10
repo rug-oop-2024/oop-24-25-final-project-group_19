@@ -2,7 +2,7 @@ class Feature():
     """
     Represents a feature (column) in a dataset, with its name, type, and values
     """
-    def __init__(self, name: str, type: str):
+    def __init__(self, name: str, type: str) -> None:
         """
         Initializes a Feature object.
 
