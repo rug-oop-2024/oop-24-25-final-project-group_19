@@ -10,7 +10,7 @@ class Dataset(Artifact):
     """
     def __init__(self, *args, **kwargs) -> None:
         """
-        Initializes a Datase class. 
+        Initializes a Datase class.
         """
         super().__init__(type="dataset", *args, **kwargs)
 
@@ -19,7 +19,7 @@ class Dataset(Artifact):
     @staticmethod
     def from_dataframe(
         data: pd.DataFrame,
-        name: str, asset_path: str, 
+        name: str, asset_path: str,
         version: str = "1.0.0"
             ) -> DatasetObject:
         """
@@ -32,8 +32,9 @@ class Dataset(Artifact):
             version (str): Version of the dataset. Defaults to "1.0.0".
 
         Returns:
-            Dataset: A new Dataset instance with the given data, name, and version.
-        """ 
+            Dataset: A new Dataset instance with the given data,
+            name, and version.
+        """
         return Dataset(
             name=name,
             asset_path=asset_path,

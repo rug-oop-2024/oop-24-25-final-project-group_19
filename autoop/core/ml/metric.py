@@ -32,8 +32,8 @@ def get_metric(name: str) -> Metric:
         "accuracy": Accuracy,
         "error_rate": ErrorRate,
         "mean_absolute_error": MeanAbsoluteError,
-        "root_mean_squared_error":RootMeanSquaredError,
-        "jaccard_index": JaccardIndex 
+        "root_mean_squared_error": RootMeanSquaredError,
+        "jaccard_index": JaccardIndex
 
     }
     if name in metric_classes:
@@ -58,7 +58,7 @@ class Metric(ABC):
             float: The calculated metric value.
         """
         pass
-    
+
     def evaluate(
         self,
         predictions: np.ndarray,

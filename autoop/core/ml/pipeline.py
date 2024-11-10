@@ -92,6 +92,10 @@ Pipeline(
         """Preprocesses the input and target features."""
         (target_feature_name, target_data, artifact) = \
             preprocess_features([self._target_feature], self._dataset)[0]
+
+        if target_data.ndim > 1 and target_data.shape[1] > 1:
+            target_data = np.argmax(target_data, axis=1).ravel()
+
         self._register_artifact(target_feature_name, artifact)
         input_results = preprocess_features(self._input_features,
                                             self._dataset)
@@ -110,10 +114,10 @@ Pipeline(
                          self._input_vectors]
         self._test_X = [vector[int(split * len(vector)):] for vector in
                         self._input_vectors]
-        self._train_y = self._output_vector[:int(split *
-                                                 len(self._output_vector))]
-        self._test_y = self._output_vector[int(split *
-                                               len(self._output_vector)):]
+        self._train_y = self._output_vector[:int(split * len(
+            self._output_vector))]
+        self._test_y = self._output_vector[int(split * len(
+            self._output_vector)):]
 
     def _compact_vectors(self, vectors: List[np.array]) -> np.array:
         """Concatenates a list of vectors into a single array."""
@@ -130,8 +134,6 @@ Pipeline(
         X = self._compact_vectors(self._test_X)
         Y = self._test_y
         self._metrics_results = []
-        if len(X) == 0:
-            raise ValueError(self._test_X)
         predictions = self._model.predict(X)
         for metric in self._metrics:
             result = metric.evaluate(predictions, Y)
@@ -149,14 +151,35 @@ Pipeline(
         Y = self._train_y
         self._metrics_results_train = []
         predictions = self._model.predict(X)
+
         for metric in self._metrics:
             result = metric.evaluate(predictions, Y)
             self._metrics_results_train.append((metric, result))
         self._evaluate()
+
+        if "encoder" in self._artifacts[self._target_feature.name]:
+            encoder = self._artifacts[self._target_feature.name]["encoder"]
+            category_list = encoder.categories_[0]
+            predictions = [category_list[category] for category in predictions]
+            self._predictions = [
+                category_list[category] for category in self._predictions]
+            self._model.add_parameters("encoder_list", category_list)
+
+        if "scaler" in self._artifacts[self._target_feature.name]:
+            scaler = self._artifacts[self._target_feature.name]["scaler"]
+            predictions = scaler.inverse_transform(
+                predictions.reshape(-1, 1)).flatten()
+            self._predictions = scaler.inverse_transform(
+                self._predictions.reshape(-1, 1)).flatten()
+            self._model.add_parameters("scaler", scaler)
+
         return {
             "metrics": {
                 "training": self._metrics_results_train,
                 "evaluation": self._metrics_results
             },
-            "predictions": self._predictions,
+            "predictions": {
+                "training": predictions,
+                "evaluation": self._predictions
+            }
         }

@@ -62,7 +62,7 @@ class LocalStorage(Storage):
     Implementation of a Local Storage that manages files.
     """
 
-    def __init__(self, base_path: str="./assets") -> None:
+    def __init__(self, base_path: str = "./assets") -> None:
         """Initializes a LocalStorage object."""
         self._base_path = base_path
         if not os.path.exists(self._base_path):
@@ -97,7 +97,7 @@ class LocalStorage(Storage):
         with open(path, 'rb') as f:
             return f.read()
 
-    def delete(self, key: str="/") -> None:
+    def delete(self, key: str = "/") -> None:
         """
         Delete a local file or directory.
 
@@ -135,7 +135,7 @@ class LocalStorage(Storage):
         """
         if not os.path.exists(path):
             raise NotFoundError(path)
-    
+
     def _join_path(self, path: str) -> str:
         """
         Join the base path with a relative path.

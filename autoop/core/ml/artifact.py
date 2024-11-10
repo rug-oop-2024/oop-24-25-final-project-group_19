@@ -11,7 +11,7 @@ class Artifact():
             asset_path: str,
             version: str,
             data: bytes | np.ndarray,
-            type: str,
+            type: str = None,
             metadata: str = None,
             tags: str = None
     ) -> None:

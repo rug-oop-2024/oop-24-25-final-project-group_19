@@ -1,6 +1,5 @@
 
 from abc import ABC, abstractmethod
-from autoop.core.ml.artifact import Artifact
 import numpy as np
 from typing import Dict
 from copy import deepcopy
@@ -48,18 +47,15 @@ class Model(ABC):
         """
         return deepcopy(self._parameters)
 
-    @parameters.setter
-    def parameters(self, value: Dict[str, np.ndarray]) -> None:
+    def add_parameters(self, key: str, value) -> None:
         """
-        Sets the model's parameters after validation.
+        Adds or updates a single parameter in the model's parameters.
 
         Args:
-            value (Dict[str, np.ndarray]): A dictionary containing the
-            new model parameters.
+            key (str): The name of the parameter to add or update.
+            value (Any): The value of the parameter.
         """
-        if not isinstance(value, dict):
-            raise ValueError("Parameters must be a dictionary.")
-        self._parameters = value
+        self._parameters[key] = value
 
     @property
     def type(self):
@@ -67,7 +63,5 @@ class Model(ABC):
         return self._type
 
     def _assign_sklearn_parameters(self, model):
-        self.parameters = {
-            'intercept': model.intercept_,
-            'coefficients': model.coef_
-        }
+        self.add_parameters("intercept", model.intercept_)
+        self.add_parameters("coefficients", model.coef_)

@@ -201,7 +201,6 @@ class Modelling:
             self._print_nicely(str(st.session_state._pipeline))
             if st.session_state._pipeline:
                 st.write(st.session_state._pipeline.execute())
-                st.write(st.session_state._pipeline.model.parameters)
 
     def _print_nicely(self, pipeline_str: str) -> None:
         """Format the summary of the pipeline.
@@ -234,13 +233,13 @@ class Modelling:
             r"<autoop\.core\.ml\.metric\.(\w+) object", metrics_match)
         metrics_formatted = ', '.join(metrics)
 
-        st.session_state._summary = f"""
-        **Type of model:** {model_type}  
-        **Input features:** {input_features_formatted}  
-        **Target feature:** {target_feature_name} ({target_feature_type})  
-        **Split ratio:** {split_value}  
-        **Metrics:** {metrics_formatted}  
-        """
+        st.session_state._summary = "\n".join([
+         f"**Type of model:** {model_type}",
+         f"**Input features:** {input_features_formatted}",
+         f"**Target feature:** {target_feature_name} ({target_feature_type})",
+         f"**Split ratio:** {split_value}",
+         f"**Metrics:** {metrics_formatted}"
+        ])
         st.write(st.session_state._summary)
 
     def _save(self) -> None:
@@ -288,7 +287,7 @@ class Modelling:
                     split_value = self._choose_split_value()
                     selected_metrics = self._choose_metric()
                     if selected_metrics:
-                        pipeline = self._run_pipeline(
+                        self._run_pipeline(
                             selected_model,
                             selected_metrics,
                             dataset,
