@@ -1,13 +1,44 @@
-
+"""
+This module provides a function to retrieve machine learning model
+instances by name.
+"""
 from autoop.core.ml.model.model import Model
-from autoop.core.ml.model.regression import MultipleLinearRegression
+from autoop.core.ml.model.classification import (
+    RidgeClassificationModel,
+    LogisticRegressionWrapper,
+    PerceptronModel
+)
+from autoop.core.ml.model.regression import (
+    Lasso,
+    ElasticNetWrapper,
+    MultipleLinearRegression,
+    RidgeRegressionModel
+)
 
 REGRESSION_MODELS = [
-] # add your models as str here
+    "ridge_regression",
+    "lasso",
+    "elastic_net",
+    "multiple_linear_regression"
+]
 
 CLASSIFICATION_MODELS = [
-] # add your models as str here
+    "ridge_classifier",
+    "perceptron_model",
+    "logistic_regression"
+]
+
 
 def get_model(model_name: str) -> Model:
     """Factory function to get a model by name."""
-    raise NotImplementedError("To be implemented.")
+    model_classes = {
+        "ridge_regression": RidgeRegressionModel,
+        "lasso": Lasso,
+        "elastic_net": ElasticNetWrapper,
+        "ridge_classifier": RidgeClassificationModel,
+        "perceptron_model": PerceptronModel,
+        "logistic_regression": LogisticRegressionWrapper,
+        "multiple_linear_regression": MultipleLinearRegression
+    }
+    if model_name in model_classes:
+        return model_classes[model_name]()

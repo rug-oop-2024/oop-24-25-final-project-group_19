@@ -153,32 +153,32 @@ If you did not implement the feature
 
 | Requirement                           | Type (FN/NF) | Implemented by       | Implementation Completed (add X if done) | Comment |
 |-------------------------------------- |--------------|----------------------|--------------------------|---------|         
-| Up-to-date requirements.txt           | NF           |                      |         | |
-| `ML/detect-features`                  | FN           |                      |         | |
-| `ML/artifact`                         | NF           |                      |         | |
-| `ML/feature`                          | NF           |                      |         | |
-| `ML/metric`                           | NF           |                      |         | |
-| `ML/metric/extensions`                | FN           |                      |         | |
-| `ML/model`                            | NF           |                      |         | |
-| `ML/model/extensions`                 | FN           |                      |         | |
-| `ML/pipeline/evaluation`              | FN           |                      |         | | 
-| `ST/page/datasets`                    | NF           |                      |         | |
-| `ST/datasets/management/create`       | FN           |                      |         | |
-| `ST/datasets/management/save`         | FN           |                      |         | |
-| `ST/page/modelling`                   | NF           |                      |         | |
-| `ST/modelling/datasets/list`          | FN           |                      |         | |
-| `ST/modelling/datasets/features`      | FN           |                      |         | |
-| `ST/modelling/models`                 | FN           |                      |         | |
-| `ST/modelling/pipeline/split`         | FN           |                      |         | |
-| `ST/modelling/pipeline/metrics`       | FN           |                      |         | |
-| `ST/modelling/pipeline/summary`       | FN           |                      |         | |
-| `ST/modelling/pipeline/train`         | FN           |                      |         | |
-| `ST/modelling/pipeline/save`          | FN           |                      |         | |
-| `ST/page/deployment`                  | FN           |                      |         | |
-| `ST/deployment/load`                  | FN           |                      |         | |
-| `ST/deployment/predict`               | FN           |                      |         | |
+| Up-to-date requirements.txt           | NF           | both                 | x       | |
+| `ML/detect-features`                  | FN           | both                 | x       |Look for reasoning in decision (DSC-0006) |
+| `ML/artifact`                         | NF           | both                 | x       |Look for reasoning in decision DSC-0016 |
+| `ML/feature`                          | NF           | both                 | x       | |
+| `ML/metric`                           | NF           | both                 | x       | |
+| `ML/metric/extensions`                | FN           | both                 | x       | |
+| `ML/model`                            | NF           | both                 | x       |Look for reasoning in decision: DSC-0001 and DSC-0015 |
+| `ML/model/extensions`                 | FN           | both                 | x       |Look for reasoning in decision: DSC-0018 |
+| `ML/pipeline/evaluation`              | FN           | both                 | x       |Look for reasoning in decision: DSC-0005 | 
+| `ST/page/datasets`                    | NF           | both                 | x       | -|
+| `ST/datasets/management/create`       | FN           | both                 | x       | -|
+| `ST/datasets/management/save`         | FN           | both                 | x       | -|
+| `ST/page/modelling`                   | NF           | both                 | x       |See how modelling works with decisions: DSC-0007, DSC-0008, DSC-0009,DSC-0010 and DSC-0011|
+| `ST/modelling/datasets/list`          | FN           | both                 | x       |-|
+| `ST/modelling/datasets/features`      | FN           | both                 | x       |Look for reasoning in decision: DSC-0008|
+| `ST/modelling/models`                 | FN           | both                 | x       |- |
+| `ST/modelling/pipeline/split`         | FN           | both                 | x       |Look for reasoning in decision: DSC-0009|
+| `ST/modelling/pipeline/metrics`       | FN           | both                 | x       | -|
+| `ST/modelling/pipeline/summary`       | FN           | both                 | x       |Look for reasoning in decision: DSC-0010|
+| `ST/modelling/pipeline/train`         | FN           | both                 | x       | -|
+| `ST/modelling/pipeline/save`          | FN           | both                 | x       |Look for reasoning in decision: DSC-0011 |
+| `ST/page/deployment`                  | FN           | both                 | x       | |
+| `ST/deployment/load`                  | FN           | both                 | x       | |
+| `ST/deployment/predict`               | FN           | both                 | x       |Look for reasoning in decision: DSC-0012 |
 
 If you add extra features, please indicate them below:
 | Requirement                           | Type (FN/NF) | Implemented by       | Implementation Completed (add X if done) | Comment |
 |-------------------------------------- |--------------|----------------------|---------|-----|
-|           |            |                      |         | |
+|   Sphinx Documentation        |     NF       |          both            |    x     | The documentation can be found in docs/_build/html/index.html |
