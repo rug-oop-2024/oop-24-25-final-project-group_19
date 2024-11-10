@@ -1,4 +1,7 @@
-
+"""
+This module provides a function to retrieve machine learning model
+instances by name.
+"""
 from autoop.core.ml.model.model import Model
 from autoop.core.ml.model.classification import (
     RidgeClassificationModel,

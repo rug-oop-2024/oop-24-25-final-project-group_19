@@ -1,6 +1,5 @@
 from autoop.core.storage import LocalStorage
 from autoop.core.database import Database
-from autoop.core.ml.dataset import Dataset
 from autoop.core.ml.artifact import Artifact
 from autoop.core.storage import Storage
 from typing import List
@@ -28,7 +27,7 @@ class ArtifactRegistry():
             "metadata": artifact.metadata,
             "type": artifact.type,
         }
-        self._database.set(f"artifacts", artifact.id, entry)
+        self._database.set("artifacts", artifact.id, entry)
 
     def list(self, type: str = None) -> List[Artifact]:
         """List artifacts, and can filter by type."""
@@ -68,20 +67,6 @@ class ArtifactRegistry():
         self._storage.delete(data["asset_path"])
         self._database.delete("artifacts", artifact_id)
 
-    def get_id(self, name: str, version: str) -> str:
-        """Retrieve the ID of an artifact based on its name and version."""
-        entries = self._database.list("artifacts")
-        artifact_id = next(
-            (
-                artifact_id 
-                for artifact_id, data in entries 
-                if data["name"] == name and data["version"] == version
-            ), None)
-        if artifact_id is not None:
-            return artifact_id
-        raise ValueError(
-            f"Artifact with name '{name}' and version '{version}' not found.")
-
 
 class AutoMLSystem:
     """
@@ -107,7 +92,7 @@ class AutoMLSystem:
         """
         if AutoMLSystem._instance is None:
             AutoMLSystem._instance = AutoMLSystem(
-                LocalStorage("./assets/objects"), 
+                LocalStorage("./assets/objects"),
                 Database(
                     LocalStorage("./assets/dbo")
                 )

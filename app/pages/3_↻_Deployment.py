@@ -28,7 +28,8 @@ class saved_pipelines:
         selected_pipeline = pipeline_names[dropdown_pipeline]
         st.session_state._model = pickle.loads(selected_pipeline.data)
         st.write("## Chosen Pipeline summary:")
-        st.write(selected_pipeline.metadata)
+        for line in selected_pipeline.metadata:
+            st.write(line)
 
     def _prediction(self) -> None:
         """
@@ -42,7 +43,7 @@ class saved_pipelines:
                 data=df,
                 name=uploaded_file.name,
                 asset_path=None
-                    )
+            )
             data = dataset.read()
             if st.button("View the data"):
                 st.write(data)
@@ -88,5 +89,6 @@ class saved_pipelines:
         self._prediction()
 
 
-pipelines = saved_pipelines()
-pipelines.run()
+if __name__ == '__main__':
+    pipelines = saved_pipelines()
+    pipelines.run()

@@ -1,8 +1,9 @@
 
-from abc import ABC, abstractmethod
+from abc import ABC
 import numpy as np
 from typing import Dict
 from copy import deepcopy
+from sklearn.preprocessing import StandardScaler
 
 
 class Model(ABC):
@@ -12,29 +13,28 @@ class Model(ABC):
     def __init__(self) -> None:
         self._parameters = {}
 
-    @abstractmethod
     def fit(self, observations: np.ndarray, ground_truth: np.ndarray) -> None:
         """
         Fit the model to the provided observations and ground truth.
 
-        Parameters:
-            observations: An array of training data.
-            ground_truth : An array of labels for the training data.
+        Args:
+            observations (np.ndarray): An array of training data
+            ground_truth (np.ndarray): An array of labels for the training data
         """
-        pass
+        self._model.fit(observations, ground_truth)
+        self._assign_sklearn_parameters(self._model)
 
-    @abstractmethod
     def predict(self, observations: np.ndarray) -> np.ndarray:
         """
-        Predicts the output based on the input training data.
+        Predict the output based on the input observations.
 
-        Parameters:
-            observations: An array of training data.
+        Args:
+            observations (np.ndarray): An array of data for prediction.
 
         Returns:
-            np.ndarray: an array with the predicted values
+            np.ndarray: An array of predicted values.
         """
-        pass
+        return deepcopy(self._model.predict(observations))
 
     @property
     def parameters(self) -> Dict[str, np.ndarray]:
@@ -47,7 +47,10 @@ class Model(ABC):
         """
         return deepcopy(self._parameters)
 
-    def add_parameters(self, key: str, value) -> None:
+    def add_parameters(
+            self,
+            key: str,
+            value: np.ndarray | list[str] | StandardScaler) -> None:
         """
         Adds or updates a single parameter in the model's parameters.
 

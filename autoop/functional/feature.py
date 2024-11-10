@@ -15,7 +15,8 @@ def detect_feature_types(dataset: Dataset) -> List[Feature]:
     list_of_features = []
     for column in data.columns:
         if is_numeric_dtype(data[column]):
-            list_of_features.append(Feature(name=column, type="numerical"))
+            type = "numerical"
         else:
-            list_of_features.append(Feature(name=column, type="categorical"))
+            type = "categorical"
+        list_of_features.append(Feature(name=column, type=type))
     return list_of_features

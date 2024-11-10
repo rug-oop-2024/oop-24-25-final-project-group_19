@@ -21,7 +21,7 @@ class Dataset(Artifact):
         data: pd.DataFrame,
         name: str, asset_path: str,
         version: str = "1.0.0"
-            ) -> DatasetObject:
+    ) -> DatasetObject:
         """
         Create a Dataset instance from a pandas DataFrame.
 

@@ -149,7 +149,7 @@ class Modelling:
             "How would you like to split the dataset?",
             min_value=10,
             max_value=90,
-            value=80)/100
+            value=80) / 100
         st.write(
             f"The dataset will be split so that {round(split_value * 100)}% of"
             f" the dataset will be used for training, and "
@@ -199,8 +199,23 @@ class Modelling:
             )
             st.write("### Pipeline Summary")
             self._print_nicely(str(st.session_state._pipeline))
-            if st.session_state._pipeline:
-                st.write(st.session_state._pipeline.execute())
+
+            results = st.session_state._pipeline.execute()
+            for key, value in results.items():
+                if key == "metrics":
+                    st.write("### Metrics")
+                    for subset, metrics in value.items():
+                        for metric in metrics:
+                            metric_name, metric_value = metric
+                            st.write(
+                                f"**{metric_name.__class__.__name__} "
+                                f"for {subset}:** {metric_value}"
+                            )
+                elif key == "predictions":
+                    st.write("### Predictions")
+                    for subset, predictions in value.items():
+                        st.write(f"**{subset.capitalize()} {key}:**")
+                        st.write(predictions)
 
     def _print_nicely(self, pipeline_str: str) -> None:
         """Format the summary of the pipeline.
@@ -214,16 +229,16 @@ class Modelling:
         input_features_match = re.search(
             r"input_features=\[(.*?)\]", pipeline_str).group(1)
         input_features = re.findall(
-            r"Feature\(name = (\w+), data_type = (\w+)\)",
+            r"Feature\(name = ([\w\s/]+), data_type = (\w+)\)",
             input_features_match)
         input_features_formatted = ', '.join(
             [f"{name.capitalize()} ({data_type})" for name,
              data_type in input_features])
 
         target_feature_match = re.search(
-            r"target_feature=Feature\(name = (\w+), data_type = (\w+)\)",
+            r"target_feature=Feature\(name = ([\w\s/]+), data_type = (\w+)\)",
             pipeline_str)
-        target_feature_name = target_feature_match.group(1).capitalize()
+        target_feature = target_feature_match.group(1).capitalize()
         target_feature_type = target_feature_match.group(2).capitalize()
 
         split_value = re.search(r"split=([\d\.]+)", pipeline_str).group(1)
@@ -233,14 +248,15 @@ class Modelling:
             r"<autoop\.core\.ml\.metric\.(\w+) object", metrics_match)
         metrics_formatted = ', '.join(metrics)
 
-        st.session_state._summary = "\n".join([
-         f"**Type of model:** {model_type}",
-         f"**Input features:** {input_features_formatted}",
-         f"**Target feature:** {target_feature_name} ({target_feature_type})",
-         f"**Split ratio:** {split_value}",
-         f"**Metrics:** {metrics_formatted}"
-        ])
-        st.write(st.session_state._summary)
+        st.session_state._summary = [
+            f"**Type of model:** {model_type}",
+            f"**Input features:** {input_features_formatted}",
+            f"**Target feature:** {target_feature} ({target_feature_type})",
+            f"**Split ratio:** {split_value}",
+            f"**Metrics:** {metrics_formatted}"
+        ]
+        for line in st.session_state._summary:
+            st.write(line)
 
     def _save(self) -> None:
         """Save the current pipeline model as an artifact."""
@@ -259,7 +275,7 @@ class Modelling:
                 if st.button("Confirm Save"):
 
                     artifact = Artifact(
-                        name=name,
+                        name=f"{name} ({version})",
                         version=version,
                         data=pickle.dumps(st.session_state._pipeline.model),
                         type="pipeline",
@@ -297,5 +313,6 @@ class Modelling:
                         self._save()
 
 
-modelling_page = Modelling()
-modelling_page.run()
+if __name__ == '__main__':
+    modelling_page = Modelling()
+    modelling_page.run()

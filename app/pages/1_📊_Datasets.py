@@ -18,7 +18,7 @@ class uploading_datasets:
                 data=df,
                 name=uploaded_file.name,
                 asset_path=f"datasets/{uploaded_file.name}"
-                )
+            )
             automl.registry.register(dataset)
             st.success("Dataset has been uploaded!")
 
@@ -27,5 +27,6 @@ class uploading_datasets:
         self._upload()
 
 
-upload = uploading_datasets()
-upload.run()
+if __name__ == '__main__':
+    upload = uploading_datasets()
+    upload.run()
