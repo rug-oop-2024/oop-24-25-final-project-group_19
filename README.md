@@ -181,4 +181,4 @@ If you did not implement the feature
 If you add extra features, please indicate them below:
 | Requirement                           | Type (FN/NF) | Implemented by       | Implementation Completed (add X if done) | Comment |
 |-------------------------------------- |--------------|----------------------|---------|-----|
-|           |            |                      |         | |
+|   Sphinx Documentation        |     NF       |          both            |    x     | The documentation can be found in docs/_build/html/index.html |

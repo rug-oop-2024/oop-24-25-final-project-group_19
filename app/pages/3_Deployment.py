@@ -23,6 +23,9 @@ class saved_pipelines:
         automl = AutoMLSystem.get_instance()
         pipelines = automl.registry.list(type="pipeline")
         pipeline_names = {pipeline.name: pipeline for pipeline in pipelines}
+        st.write("Please make sure that your input features are in the same"
+                 " order as they were when the model was trained. You can "
+                 "check below, in the pipeline summary.")
         if len(pipeline_names) == 0:
             st.write("There are no saved pipelines yet!")
         else:

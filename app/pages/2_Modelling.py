@@ -264,7 +264,9 @@ class Modelling:
             if "_save" not in st.session_state:
                 st.session_state["_save"] = False
 
-            if st.session_state._save or st.button("SAVE"):
+            if st.session_state._run_model and (
+                st.session_state._save or st.button("SAVE")
+            ):
                 st.session_state._save = True
                 name = st.text_input("Name")
                 version = st.text_input("Version", "1.0.0")
@@ -286,6 +288,8 @@ class Modelling:
                     automl.registry.register(artifact)
                     st.write(f"The pipeline '{name}'"
                              f"version: {version} has been saved.")
+                    st.session_state._save = False
+                    st.session_state._run_model = False
 
     def run(self) -> None:
         """Main method to execute all modelling steps in the correct order."""

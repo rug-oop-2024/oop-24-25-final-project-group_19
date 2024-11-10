@@ -8,6 +8,7 @@ from autoop.core.ml.feature import Feature
 from autoop.core.ml.metric import Metric
 from autoop.functional.preprocessing import preprocess_features
 import numpy as np
+from copy import deepcopy
 
 
 class Pipeline():
@@ -172,7 +173,7 @@ Pipeline(
                 self._predictions.reshape(-1, 1)).flatten()
             self._model.add_parameters("scaler", scaler)
 
-        return {
+        return deepcopy({
             "metrics": {
                 "training": self._metrics_results_train,
                 "evaluation": self._metrics_results
@@ -181,4 +182,4 @@ Pipeline(
                 "training": predictions,
                 "evaluation": self._predictions
             }
-        }
+        })
