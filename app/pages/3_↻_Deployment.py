@@ -23,13 +23,16 @@ class saved_pipelines:
         automl = AutoMLSystem.get_instance()
         pipelines = automl.registry.list(type="pipeline")
         pipeline_names = {pipeline.name: pipeline for pipeline in pipelines}
-        dropdown_pipeline = st.selectbox(
-            "Choose a saved pipeline", pipeline_names)
-        selected_pipeline = pipeline_names[dropdown_pipeline]
-        st.session_state._model = pickle.loads(selected_pipeline.data)
-        st.write("## Chosen Pipeline summary:")
-        for line in selected_pipeline.metadata:
-            st.write(line)
+        if len(pipeline_names) == 0:
+            st.write("There are no saved pipelines yet!")
+        else:
+            dropdown_pipeline = st.selectbox(
+                "Choose a saved pipeline", pipeline_names)
+            selected_pipeline = pipeline_names[dropdown_pipeline]
+            st.session_state._model = pickle.loads(selected_pipeline.data)
+            st.write("## Chosen Pipeline summary:")
+            for line in selected_pipeline.metadata:
+                st.write(line)
 
     def _prediction(self) -> None:
         """
