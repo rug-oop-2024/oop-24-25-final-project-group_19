@@ -65,7 +65,7 @@ class saved_pipelines:
                     if input_data.shape[1] != expected_features:
                         raise ValueError(
                             f"There should be {expected_features}"
-                            f"input features."
+                            f" input features."
                         )
                     prediction = st.session_state._model.predict(input_data)
                     st.session_state["_prediction"] = True

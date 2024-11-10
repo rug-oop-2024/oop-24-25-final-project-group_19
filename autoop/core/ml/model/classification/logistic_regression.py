@@ -6,7 +6,7 @@ class LogisticRegressionWrapper(Model):
     """
     A simplified wrapper for scikit-learn's LogisticRegression model.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the LogisticRegressionWrapper.
         """
